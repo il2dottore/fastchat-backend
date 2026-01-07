@@ -1,0 +1,19 @@
+@startuml
+start
+:Người dùng nhấn "Block";
+
+if (Đã bị đối phương block trước?) then (Có)
+  :Hiển thị lỗi "Bạn đã bị block";
+  stop
+else (Không)
+  :Gửi yêu cầu Block lên Server;
+  if (Đã tồn tại bản ghi block?) then (Đúng)
+    :Báo lỗi "Đã block rồi";
+  else (Sai)
+    :Lưu thông tin Block vào DB;
+    :Cập nhật UI và thông báo;
+  endif
+endif
+
+stop
+@enduml

@@ -1,0 +1,20 @@
+###
+GET https://localhost/contacts/
+
+###
+POST https://localhost/contacts
+Content-Type: application/json
+
+{
+  "ownerId": "68f7bf08e5780a024d105b3c",
+  "peerId": "68fa4e8c65b40ccdcf76b237"
+}
+
+###
+DELETE https://localhost/contacts
+Content-Type: application/json
+
+{
+  "ownerId": "68f7bf08e5780a024d105b3c",
+  "peerId": "68fa4e8c65b40ccdcf76b237"
+}

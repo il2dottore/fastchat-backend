@@ -1,0 +1,68 @@
+@startuml "Hệ Thống Chat"
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Người dùng thông thường" as User
+actor "Quản trị viên nhóm" as Admin
+
+' Mối quan hệ kế thừa: Quản trị viên là một Người dùng
+Admin -up-|> User
+
+rectangle "Hệ Thống Chat" {
+    usecase "Đăng ký tài khoản" as UC_Register
+    usecase "Đăng nhập" as UC_Login
+
+    rectangle "Chức năng Người dùng" {
+        usecase "Tìm kiếm và gửi yêu cầu kết bạn" as UC1
+        usecase "Gửi và nhận tin nhắn" as UC2
+        usecase "Thực hiện cuộc gọi thoại/video" as UC3
+        usecase "Chia sẻ hình ảnh và tệp tin" as UC4
+        usecase "Xem trạng thái và thông báo" as UC5
+        usecase "Thay đổi hồ sơ và cài đặt riêng tư" as UC6
+        usecase "Báo cáo vấn đề kết nối" as UC7
+    }
+
+    rectangle "Chức năng Quản trị nhóm" {
+        usecase "Tạo nhóm chat và đặt tên nhóm" as UC8
+        usecase "Quản lý thành viên (thêm/mời ra)" as UC9
+        usecase "Phân quyền quản trị" as UC10
+        usecase "Cập nhật thông tin và ảnh nhóm" as UC11
+        usecase "Xóa nội dung không phù hợp" as UC12
+        usecase "Giải tán nhóm/Cài đặt bảo mật" as UC13
+    }
+
+    ' Kết nối của Người dùng (Admin cũng dùng được các tính năng này nhờ kế thừa)
+    User --> UC_Register
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7
+
+    ' Kết nối riêng của Quản trị viên
+    Admin --> UC8
+    Admin --> UC9
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13
+
+    ' Quan hệ Include Đăng nhập cho tất cả các tính năng chính
+    UC1 ..> UC_Login : <<include>>
+    UC2 ..> UC_Login : <<include>>
+    UC3 ..> UC_Login : <<include>>
+    UC4 ..> UC_Login : <<include>>
+    UC5 ..> UC_Login : <<include>>
+    UC6 ..> UC_Login : <<include>>
+    UC7 ..> UC_Login : <<include>>
+    
+    UC8 ..> UC_Login : <<include>>
+    UC9 ..> UC_Login : <<include>>
+    UC10 ..> UC_Login : <<include>>
+    UC11 ..> UC_Login : <<include>>
+    UC12 ..> UC_Login : <<include>>
+    UC13 ..> UC_Login : <<include>>
+}
+@enduml

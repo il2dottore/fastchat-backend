@@ -1,0 +1,29 @@
+### Registration test
+POST https://localhost/users/registration
+Content-Type: application/json
+
+{
+  "email": "vobao13082005@gmail.com",
+  "password": "12345",
+  "username": "sussybakacute",
+  "avatarUrl": null,
+  "lastOnline": "2025-10-24T15:52:50.206Z",
+  "userStatus": null
+}
+
+### Login test
+POST https://localhost/auth/login
+Content-Type: application/json
+
+{
+  "email": "vongocbao13092005@gmail.com",
+  "password": "12345"
+}
+
+### Login test
+POST https://localhost/auth/request-access-token
+Content-Type: application/json
+
+{
+  "refreshToken": "d"
+}

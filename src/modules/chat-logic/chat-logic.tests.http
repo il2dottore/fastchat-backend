@@ -1,0 +1,20 @@
+### Block user
+POST https://localhost/chat-logic/block-user
+Content-Type: application/json
+
+{
+  "blockerUserId": "68f7bf08e5780a024d105b3c",
+  "blockedUserId": "68fa4e8c65b40ccdcf76b237"
+}
+
+### Delete block pair
+DELETE https://localhost/chat-logic/block-user
+Content-Type: application/json
+
+{
+  "blockerUserId": "68f7bf08e5780a024d105b3c",
+  "blockedUserId": "68fa4e8c65b40ccdcf76b237"
+}
+
+### Get block list
+GET https://localhost/chat-logic/block-user/block-list/68f7bf08e5780a024d105b3c

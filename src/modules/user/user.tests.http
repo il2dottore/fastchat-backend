@@ -1,0 +1,10 @@
+### Get conversations by user
+GET https://localhost/users/68f7bf08e5780a024d105b3c/
+
+### Get conversations by user
+GET https://localhost/users/68f7bf08e5780a024d105b3c/conversations
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjUyODI5ODcsImV4cCI6MTc2NTI4Mzg4Nywic3ViIjoiNjhmN2JmMDhlNTc4MGEwMjRkMTA1YjNjIiwidHlwZSI6ImFjY2VzcyJ9.--T_zJsDGX4NtKNm2-Z-oVzmRqATNc8j3uCYzhYnueI
+
+### Get conversations by user
+GET https://localhost/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjUyODY5NTgsImV4cCI6MTc2NTI4Nzg1OCwic3ViIjoiNjhmN2JmMDhlNTc4MGEwMjRkMTA1YjNjIiwidHlwZSI6ImFjY2VzcyJ9.MP6Pb83G5M5zQ4D2p7t9_NFw8Ej5Mm-sRFeQjh99pVc

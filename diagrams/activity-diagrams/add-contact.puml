@@ -1,0 +1,25 @@
+@startuml
+title Quy trình: Thêm người dùng vào liên hệ
+
+start
+:Người dùng xem thông tin Profile;
+
+if (Kiểm tra trạng thái liên hệ?) then (Đã là liên hệ)
+  :Hiển thị nút "Remove contact";
+  stop
+else (Chưa là liên hệ)
+  :Người dùng nhấn "Add to contact";
+  :Gửi yêu cầu POST /contacts;
+  
+  if (Server kiểm tra dữ liệu?) then (Đã tồn tại trùng lặp)
+    :Báo lỗi "Liên hệ đã tồn tại";
+  else (Hợp lệ)
+    :Lưu liên hệ mới vào Database;
+    :Trả về thành công;
+    :Hiển thị thông báo "Thành công";
+    :Cập nhật trạng thái giao diện;
+  endif
+endif
+
+stop
+@enduml

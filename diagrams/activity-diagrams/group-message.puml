@@ -1,0 +1,28 @@
+@startuml
+title Quy trình: Gửi tin nhắn vào nhóm
+
+start
+:Người dùng nhập nội dung/chọn file;
+:Nhấn nút "Gửi";
+
+if (Có tệp đính kèm?) then (Có)
+  :Tải tệp lên Server;
+  :Nhận URL và thông tin tệp;
+endif
+
+:Gửi Event 'createMessage' qua Socket;
+
+:Backend kiểm tra quyền tham gia nhóm;
+
+if (Hợp lệ?) then (Sai)
+  :Báo lỗi gửi tin nhắn;
+  stop
+else (Đúng)
+  :Lưu tin nhắn vào Database;
+  :Broadcasting tới các thành viên;
+  :Gửi thông báo Push (FCM);
+  :Hiển thị tin nhắn mới trên UI;
+endif
+
+stop
+@enduml

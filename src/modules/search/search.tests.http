@@ -1,0 +1,7 @@
+
+###
+GET https://localhost/search/user/email/vongocbao1392005@gmail.com
+
+
+###
+GET https://localhost/search/message/693909e0704c96d28e612a09?keyword=server

@@ -1,0 +1,35 @@
+@startuml
+title Biểu đồ tuần tự: Gửi tin nhắn trực tiếp (DM)
+
+actor "Người gửi (User A)" as UserA
+participant "Ứng dụng (Flutter)" as App
+participant "Socket Gateway" as Socket
+participant "Message Service" as Service
+database "MongoDB" as DB
+participant "FCM Service" as FCM
+actor "Người nhận (User B)" as UserB
+
+UserA -> App: Nhập tin nhắn & Nhấn gửi
+App -> Socket: Emit 'createMessage' (DTO)
+
+activate Socket
+Socket -> Service: createMessage(dto)
+activate Service
+
+Service -> DB: Kiểm tra quan hệ Participant
+Service -> DB: Lưu tin nhắn mới
+DB --> Service: Trả về Message Object
+deactivate Service
+
+Socket -> DB: Lấy thông tin chi tiết Sender (Lookup)
+Socket -> App: Emit 'messageCreated' (To Room)
+App -> UserA: Hiển thị tin nhắn (State updated)
+
+Socket -> FCM: Gửi Push Notification (cho User B)
+FCM -> UserB: Hiển thị thông báo trên điện thoại
+
+Socket --> UserB: Emit 'messageCreated' (Nếu User B đang Online)
+UserB -> UserB: Cập nhật màn hình chat
+
+deactivate Socket
+@enduml

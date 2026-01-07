@@ -1,0 +1,44 @@
+### Set role for user
+POST https://localhost/participants/admin-actions/set-role
+Content-Type: application/json
+
+{
+  "setterUserId": "68f7bf08e5780a024d105b3c",
+  "memberUserId": "68fa4e8c65b40ccdcf76b237",
+  "conversationId": "693909e0704c96d28e612a09",
+  "participantRole": "member"
+}
+
+### Kick participant
+POST https://localhost/participants/admin-actions/kick-participant
+Content-Type: application/json
+
+{
+  "kickedUserId": "68fba10304fa292f6f4ea7af",
+  "conversationId": "693909e0704c96d28e612a09"
+}
+
+### Ban participant
+POST https://localhost/participants/admin-actions/ban-participant
+Content-Type: application/json
+
+{
+  "conversationId": "693909e0704c96d28e612a09",
+  "banDuration": 120,
+  "bannedUser": "68fa4e8c65b40ccdcf76b237",
+  "bannedBy": "68f7bf08e5780a024d105b3c",
+  "reason": "khong co ly do"
+}
+
+### Remove ban for participant
+DELETE https://localhost/participants/admin-actions/ban-participant
+Content-Type: application/json
+
+{
+  "conversationId": "693909e0704c96d28e612a09",
+  "bannedUser": "68fa4e8c65b40ccdcf76b237"
+}
+
+### Remove ban for participant
+GET https://localhost/participants/me/693909e0704c96d28e612a09
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjYwNzA2OTIsImV4cCI6MTc2NjA3MTU5Miwic3ViIjoiNjhmN2JmMDhlNTc4MGEwMjRkMTA1YjNjIiwidHlwZSI6ImFjY2VzcyJ9.m7fWOGkB0Kvt1YYxWs7WL-6-MIIx9AzTmEC2PWo2NWw

@@ -1,0 +1,49 @@
+### Create a direct conversation
+POST https://localhost/conversations/
+Content-Type: application/json
+
+{
+  "type": "direct",
+  "owners": [
+    "68fba170e3d051cfa1e4a94b", 
+    "68f7bf08e5780a024d105b3c"
+  ],
+  "metadata": {
+    "autoDeleteTime": 600
+  }
+}
+
+### Create a group conversation
+POST http://localhost/conversations/
+Content-Type: application/json
+
+### Join the conversation
+POST http://localhost/conversations/cid/join
+Content-Type: application/json
+
+### Get participants of the conversation
+GET https://localhost/conversations/693909e0704c96d28e612a09/participants 
+
+### Get messages of the conversation
+GET https://localhost/conversations/693d273e3b0297bd1fa917c8/messages
+
+### Get messages of the conversation
+GET https://localhost/conversations/68fba182e3d051cfa1e4a94c/invitation
+Content-Type: application/json
+
+### Get messages of the conversation
+GET https://localhost/conversations/693909e0704c96d28e612a09
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjUyODY5NTgsImV4cCI6MTc2NTI4Nzg1OCwic3ViIjoiNjhmN2JmMDhlNTc4MGEwMjRkMTA1YjNjIiwidHlwZSI6ImFjY2VzcyJ9.MP6Pb83G5M5zQ4D2p7t9_NFw8Ej5Mm-sRFeQjh99pVc
+Content-Type: application/json
+
+### Get messages of the conversation
+PUT https://localhost/conversations/693909e0704c96d28e612a09
+Authorization: Bearer 
+Content-Type: application/json
+
+{
+  "metadata.groupName": "",
+  "metadata.groupDescription": "",
+  "metadata.groupName": "",
+  "metadata.accessibility": ""
+}

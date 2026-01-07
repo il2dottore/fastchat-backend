@@ -1,0 +1,8 @@
+- Chức năng quản trị group:
++ Admin xoá tin nhắn người dùng
++ Admin kick người dùng
++ Admin cấm người dùng
+- Update logic chat group:
++ Người dùng chưa tham gia nhóm/bị kick thì không gửi tin nhắn được (Nếu người dùng tìm group trên thanh tìm kiếm)
++ Người dùng bị cấm chat bởi admin thì cũng không chat được, đợi hết hạn ban
+

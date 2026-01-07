@@ -1,0 +1,103 @@
+@startuml
+!theme plain
+hide circle
+skinparam linetype ortho
+entity "User" as user {
+  *_id : ObjectId
+  --
+  email : string
+  username : string
+  password : string
+  fullname : string
+  avatarUrl : string
+  lastOnline : Date
+  callSocketId : string
+  userStatus : UserStatus
+  fcmToken : string
+  isVerified : boolean
+}
+entity "AuthToken" as auth_token {
+  *_id : ObjectId
+  --
+  refreshToken : string
+  *userId : ObjectId <<FK>>
+  createdAt : Date
+}
+entity "VerificationCode" as verification_code {
+  *_id : ObjectId
+  --
+  email : string
+  code : string
+  createdAt : Date
+  expiresAt : Date
+}
+entity "Contact" as contact {
+  *_id : ObjectId
+  --
+  *ownerId : ObjectId <<FK>>
+  *peerId : ObjectId <<FK>>
+  createdAt : Date
+}
+entity "Conversation" as conversation {
+  *_id : ObjectId
+  --
+  type : ConversationType
+  metadata : json
+}
+entity "Participant" as participant {
+  *_id : ObjectId
+  --
+  *conversationId : ObjectId <<FK>>
+  *userId : ObjectId <<FK>>
+  role : ParticipantRole
+  banStatus : json
+}
+entity "Message" as message {
+  *_id : ObjectId
+  --
+  *conversationId : ObjectId <<FK>>
+  *senderId : ObjectId <<FK>>
+  isModified : boolean
+  isDeleted : boolean
+  metadata : json
+  attachments : json
+  createdAt : Date
+}
+entity "Reaction" as reaction {
+  *_id : ObjectId
+  --
+  *messageId : ObjectId <<FK>>
+  *userId : ObjectId <<FK>>
+  type : ReactionType
+  createdAt : Date
+}
+entity "BlockedUser" as blocked_user {
+  *_id : ObjectId
+  --
+  *blockerUserId : ObjectId <<FK>>
+  *blockedUserId : ObjectId <<FK>>
+  createdAt : Date
+}
+entity "BannedUser" as banned_user {
+  *_id : ObjectId
+  --
+  *bannedUserId : ObjectId <<FK>>
+  *conversationId : ObjectId <<FK>>
+  releaseDate : Date
+  createdAt : Date
+}
+' Relationships
+user ||..o{ auth_token : "has"
+user ||..o{ contact : "owner"
+user ||..o{ contact : "peer"
+user ||..o{ participant : "participates"
+user ||..o{ message : "sends"
+user ||..o{ reaction : "reacts"
+user ||..o{ blocked_user : "blocks"
+user ||..o{ blocked_user : "is blocked"
+user ||..o{ banned_user : "is banned"
+conversation ||..o{ participant : "has"
+conversation ||..o{ message : "contains"
+conversation ||..o{ banned_user : "bans"
+message ||..o{ reaction : "has"
+@enduml

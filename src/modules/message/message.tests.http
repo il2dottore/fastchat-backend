@@ -1,0 +1,10 @@
+GET https://localhost/messages/test
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjQxNDA3MTksImV4cCI6MTc2NDE0MTYxOSwic3ViIjoiNjhmYTRlOGM2NWI0MGNjZGNmNzZiMjM3IiwidHlwZSI6ImFjY2VzcyJ9.b90JkhFivl5lUptjh2EM3vNtk--QKYAdTNaAeF0VKyU
+
+###
+GET https://localhost/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjQxNDA3MTksImV4cCI6MTc2NDE0MTYxOSwic3ViIjoiNjhmYTRlOGM2NWI0MGNjZGNmNzZiMjM3IiwidHlwZSI6ImFjY2VzcyJ9.b90JkhFivl5lUptjh2EM3vNtk--QKYAdTNaAeF0VKyU
+
+
+###
+GET https://localhost/messages/last-messages/68f7bf08e5780a024d105b3c

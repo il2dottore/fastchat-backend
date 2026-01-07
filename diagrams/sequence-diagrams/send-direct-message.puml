@@ -1,0 +1,35 @@
+@startuml Biểu đồ hoạt động: Gửi tin nhắn trực tiếp
+title Biểu đồ hoạt động: Gửi tin nhắn trực tiếp
+
+|Người dùng|
+start
+:Chọn người nhận từ danh sách;
+:Nhập nội dung tin nhắn hoặc biểu tượng;
+
+split
+    :Nhấn nút Gửi;
+split again
+    :Chọn đính kèm tệp tin;
+    |Hệ thống|
+    if (Tệp tin hợp lệ (dung lượng/định dạng)?) then (Có)
+        :Chuẩn bị tệp tin để gửi;
+    else (Không)
+        :Hiển thị lỗi tệp tin không hợp lệ;
+        stop
+    endif
+end split
+
+|Hệ thống|
+:Kiểm tra trạng thái quan hệ;
+if (Người gửi bị người nhận chặn?) then (Bị chặn)
+    :Hiển thị thông báo: "Không thể gửi tin nhắn";
+    stop
+else (Không bị chặn)
+    :Lưu tin nhắn vào cơ sở dữ liệu;
+    :Cập nhật tin nhắn mới lên UI cho người nhận;
+    |Người dùng|
+    :Hiển thị tin nhắn trong cửa sổ chat;
+endif
+
+stop
+@enduml
