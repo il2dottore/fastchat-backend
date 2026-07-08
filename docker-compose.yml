@@ -1,1 +1,84 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sussychat-api
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 443
+      HTTPS_ENABLED: "true"
+      MONGO_DB_HOST: mongdb-container
+      MONGO_DB_PORT: 27017
+    ports:
+      - "${APP_PORT:-443}:443"
+    volumes:
+      - ./certs:/app/certs:ro
+
+  mongo:
+    image: mongo:7
+    container_name: mongdb-container
+    hostname: mongdb-container
+    restart: unless-stopped
+    env_file:
+      - ./src/.env
+    environment:
+      MONGO_DB_PORT: 27017
+    entrypoint:
+      - bash
+      - -lc
+      - |
+        export MONGO_INITDB_ROOT_USERNAME="$$MONGO_DB_USERNAME"
+        export MONGO_INITDB_ROOT_PASSWORD="$$MONGO_DB_PASSWORD"
+        export MONGO_INITDB_DATABASE="$$MONGO_DB_DATABASE"
+        exec docker-entrypoint.sh mongod --bind_ip_all
+    ports:
+      - "${MONGO_PORT_FORWARD:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 'db.adminCommand(\"ping\").ok' | mongosh mongodb://$$MONGO_DB_USERNAME:$$MONGO_DB_PASSWORD@localhost:27017/admin --quiet",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  coturn:
+    image: coturn/coturn:4.6.3-r3
+    container_name: sussychat-coturn
+    restart: unless-stopped
+    env_file:
+      - ./src/.env
+    environment:
+      TURN_PORT: 3478
+      TURN_TLS_PORT: 5349
+      TURN_MIN_PORT: 49160
+      TURN_MAX_PORT: 49200
+      TURN_LISTEN_IP: 0.0.0.0
+      TURN_CERT_PATH: /certs/cert.pem
+      TURN_PKEY_PATH: /certs/key.pem
+    command: ["/bin/sh", "/opt/coturn/start-turn.sh"]
+    ports:
+      - "3478:3478/tcp"
+      - "3478:3478/udp"
+      - "5349:5349/tcp"
+      - "5349:5349/udp"
+      - "49160-49200:49160-49200/tcp"
+      - "49160-49200:49160-49200/udp"
+    volumes:
+      - ./certs:/certs:ro
+      - ./coturn/start-turn.sh:/opt/coturn/start-turn.sh:ro
+
 volumes:
+  mongo_data:

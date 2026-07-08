@@ -28,11 +28,11 @@ export const MongoProvider = [
   imports: [
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      host: 'localhost',
-      port: 27017,
-      username: 'sussybaka',
-      password: '1234567890',
-      database: 'base-project-4',
+      host: process.env.MONGO_DB_HOST!,
+      port: +process.env.MONGO_DB_PORT!,
+      username: process.env.MONGO_DB_USERNAME!,
+      password: process.env.MONGO_DB_PASSWORD!,
+      database: process.env.MONGO_DB_DATABASE!,
       entities: [
         User,
         Conversation,

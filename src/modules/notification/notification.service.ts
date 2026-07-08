@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import type { BatchResponse } from 'firebase-admin/messaging';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -29,7 +30,7 @@ export class NotificationService implements OnModuleInit {
         }
     }
 
-    async sendPushNotification(token: string, title: string, body: string, data?: any) {
+    async sendPushNotification(token: string, title: string, body: string, data?: any): Promise<string | undefined> {
         if (!this.isFirebaseInitialized) {
             console.warn('Firebase not initialized. Skipping notification.');
             return;
@@ -53,7 +54,7 @@ export class NotificationService implements OnModuleInit {
         }
     }
 
-    async sendToMultipleDevices(tokens: string[], title: string, body: string, data?: any) {
+    async sendToMultipleDevices(tokens: string[], title: string, body: string, data?: any): Promise<BatchResponse | undefined> {
         if (!this.isFirebaseInitialized || tokens.length === 0) {
             return;
         }
