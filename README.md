@@ -319,4 +319,4 @@ These are useful for quick endpoint testing in editors that support `.http` requ
 
 Flutter client:
 
-* [`il2dottore/bj_4_ui`](https://github.com/il2dottore/bj_4_ui)
+* [`il2dottore/fastchat-mobile`](https://github.com/il2dottore/fastchat-mobile)
