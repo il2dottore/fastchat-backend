@@ -1,4 +1,4 @@
-# COTURN for `il2dottore/bj_4_ui`
+# COTURN for `il2dottore/fastchat-mobile`
 
 This backend repo now includes a `coturn` service in [docker-compose.yml](../docker-compose.yml).
 
@@ -37,7 +37,7 @@ TURN ports exposed by Compose:
 
 If `ufw` or a cloud firewall is enabled, open those ports.
 
-## Flutter changes in `bj_4_ui`
+## Flutter changes in `fastchat-mobile`
 
 Update `lib/services/socket_service.dart` to point at this backend:
 
