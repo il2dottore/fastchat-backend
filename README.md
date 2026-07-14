@@ -273,7 +273,7 @@ This is the signaling backend expected by the Flutter client in `il2dottore/bj_4
 
 For TURN setup details, see:
 
-[docs/coturn-bj4-ui.md](docs/coturn-bj4-ui.md)
+[docs/coturn.md](docs/coturn.md)
 
 ## Uploads and Media
 
