@@ -273,7 +273,7 @@ This is the signaling backend expected by the Flutter client in `il2dottore/fast
 
 For TURN setup details, see:
 
-[docs/coturn.md](docs/coturn.md)
+[docs/turn-server-setup.md](docs/turn-server-setup.md)
 
 ## Uploads and Media
 
