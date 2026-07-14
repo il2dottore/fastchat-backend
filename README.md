@@ -91,8 +91,8 @@ corepack enable
 Clone the repository:
 
 ```bash
-git clone https://github.com/il2dottore/bj_4_backend.git
-cd bj_4_backend
+git clone https://github.com/il2dottore/fastchat-backend.git
+cd fastchat-backend
 ```
 
 Install dependencies:
@@ -269,7 +269,7 @@ The backend exposes Socket.IO events for:
 * ICE candidate exchange
 * Call hang-up events
 
-This is the signaling backend expected by the Flutter client in `il2dottore/bj_4_ui`.
+This is the signaling backend expected by the Flutter client in `il2dottore/fastchat-mobile`.
 
 For TURN setup details, see:
 
