@@ -1,6 +1,6 @@
 # FastChat Backend
 
-SussyChat Backend is a real-time messaging server built with NestJS. It powers authentication, user profiles, conversations, messaging, reactions, media upload, push notifications, and WebRTC signaling for the companion Flutter app [`il2dottore/bj_4_ui`](https://github.com/il2dottore/bj_4_ui).
+SussyChat Backend is a real-time messaging server built with NestJS. It powers authentication, user profiles, conversations, messaging, reactions, media upload, push notifications, and WebRTC signaling for the companion Flutter app [`il2dottore/fastchat-mobile`](https://github.com/il2dottore/fastchat-mobile).
 
 ## Main Features
 
