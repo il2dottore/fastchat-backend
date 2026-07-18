@@ -1,8 +1,6 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sussybakacute/fastchat-backend:${IMAGE_TAG:-latest}
     container_name: sussychat-api
     restart: unless-stopped
     depends_on:

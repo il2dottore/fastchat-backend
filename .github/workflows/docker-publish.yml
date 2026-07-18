@@ -35,6 +35,7 @@ jobs:
           tags: |
             type=ref,event=tag
             type=sha
+            type=raw,value=latest
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -49,3 +50,39 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install cloudflared
+        run: |
+          curl -L --fail \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+            -o cloudflared
+          chmod +x cloudflared
+          sudo mv cloudflared /usr/local/bin/cloudflared
+
+      - name: Configure SSH through Cloudflare Tunnel
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' '${{ secrets.DEPLOY_SSH_KEY }}' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          cat > ~/.ssh/config <<EOF
+          Host deploy-server
+            HostName ${{ secrets.DEPLOY_HOST }}
+            User ${{ secrets.DEPLOY_USER }}
+            IdentityFile ~/.ssh/deploy_key
+            ProxyCommand cloudflared access ssh --hostname %h
+            StrictHostKeyChecking no
+          EOF
+
+      - name: Deploy image on Ubuntu VM
+        run: |
+          ssh deploy-server \
+            "cd '${{ secrets.DEPLOY_PATH }}' && \
+             IMAGE_TAG='${GITHUB_REF_NAME}' docker compose pull api && \
+             IMAGE_TAG='${GITHUB_REF_NAME}' docker compose up -d api && \
+             docker image prune -f"
