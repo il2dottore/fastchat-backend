@@ -21,6 +21,7 @@ services:
       - "${APP_PORT:-443}:443"
     volumes:
       - ./certs:/app/certs:ro
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
 
   mongo:
     image: mongo:7
