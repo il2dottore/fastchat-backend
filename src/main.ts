@@ -17,8 +17,8 @@ export class CustomIoAdapter extends IoAdapter {
     const server = super.createIOServer(port, {
       ...options,
       transports: ['websocket', 'polling'],
-      pingTimeout: 60000,
-      pingInterval: 25000,
+      pingTimeout: 30000,
+      pingInterval: 15000,
     });
     return server;
   }
