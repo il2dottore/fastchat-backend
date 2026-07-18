@@ -9,7 +9,7 @@ services:
       mongo:
         condition: service_healthy
     env_file:
-      - ./src/.env
+      - ./.env
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -28,7 +28,7 @@ services:
     hostname: mongdb-container
     restart: unless-stopped
     env_file:
-      - ./src/.env
+      - ./.env
     environment:
       MONGO_DB_PORT: 27017
     entrypoint:
@@ -59,7 +59,7 @@ services:
     container_name: sussychat-coturn
     restart: unless-stopped
     env_file:
-      - ./src/.env
+      - ./.env
     environment:
       TURN_PORT: 3478
       TURN_TLS_PORT: 5349

@@ -7,7 +7,7 @@ import { SussyValidationPipe } from './pipes/validation.pipe';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ServerOptions } from 'socket.io';
 
-const defaultEnvPath = fs.existsSync('.env') ? '.env' : 'src/.env';
+const defaultEnvPath = '.env';
 dotenv.config({
   path: process.env.DOTENV_CONFIG_PATH ?? defaultEnvPath,
 });
@@ -39,7 +39,7 @@ async function bootstrap() {
   }
 
   const httpsEnabled = httpsRequested && hasHttpsCerts;
-  const port = Number(process.env.PORT ?? (httpsEnabled ? 443 : 3000));
+  const port = 443;
 
   const app = await NestFactory.create(
     AppModule,

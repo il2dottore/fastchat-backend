@@ -65,7 +65,7 @@ diagrams/                        # Sequence and activity diagrams
 docker-compose.yml               # API, MongoDB, and COTURN stack
 Dockerfile                       # Multi-stage production image
 docs/                            # Extra deployment notes
-src/.env.example                 # Environment variable template
+.env.example                     # Environment variable template
 ```
 
 ## Requirements
@@ -109,12 +109,12 @@ npm install
 
 ## Environment Configuration
 
-This project reads environment variables from `src/.env` by default.
+This project reads environment variables from `.env` by default.
 
 Create your local env file from the example:
 
 ```bash
-cp src/.env.example src/.env
+cp .env.example .env
 ```
 
 ### Core App Configuration
