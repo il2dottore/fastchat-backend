@@ -7,7 +7,8 @@ export class AppController {
   getIndex() {
     return {
       success: true,
-      date: new Date
+      date: new Date,
+      message: 'v1.0.2 deployed'
     };
   }
 }
