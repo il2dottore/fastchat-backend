@@ -1,122 +1,75 @@
 # FastChat Backend
 
-Backend chat real-time dùng NestJS, Socket.IO, MongoDB, Firebase, Cloudflare R2 và Coturn.
+Real-time chat backend built with NestJS, Socket.IO, MongoDB, Firebase Cloud Messaging, Cloudflare R2, and Coturn.
 
-## Chạy bằng Docker
+## Docker deployment
 
-Yêu cầu: Docker Engine và Docker Compose Plugin.
+Requirements: Docker Engine and Docker Compose.
 
-```bash
-git clone https://github.com/il2dottore/fastchat-backend.git
-cd fastchat-backend
-cp .env.example .env
-docker compose pull
-docker compose up -d
-```
+Clone the repository and create the runtime environment file:
 
-Kiểm tra container:
+`git clone https://github.com/il2dottore/fastchat-backend.git && cd fastchat-backend && cp .env.example .env`
 
-```bash
-docker compose ps
-docker compose logs -f api
-```
+Prepare `certs/key.pem`, `certs/cert.pem`, `firebase-service-account.json`, and `coturn/start-turn.sh`.
 
-Dừng hệ thống:
+Pull the published images and start the stack:
 
-```bash
-docker compose down
-```
+`docker compose pull`
 
-`.env` phải có MongoDB hostname là service/container trong Compose:
+`docker compose up -d`
 
-```env
-IMAGE_TAG=latest
-MONGO_DB_HOST=mongdb-container
-MONGO_DB_PORT=27017
-MONGO_DB_USERNAME=your-user
-MONGO_DB_PASSWORD=your-password
-MONGO_DB_DATABASE=sussychat
-```
+Check status and logs with `docker compose ps` and `docker compose logs -f api`.
 
-Chuẩn bị các file được mount:
+Stop the stack with `docker compose down`.
 
-```text
-certs/key.pem
-certs/cert.pem
-firebase-service-account.json
-coturn/start-turn.sh
-```
+MongoDB data is stored in the `mongo_data` volume. Do not use `docker compose down -v` if the data must be preserved.
 
-MongoDB lưu dữ liệu trong volume `mongo_data`. Không dùng `docker compose down -v` nếu muốn giữ dữ liệu.
+## Environment configuration
 
-## Chạy image theo tag
+The API runs on HTTPS port `443`:
 
-Image được publish lên Docker Hub khi push Git tag:
+`HOST=0.0.0.0`, `PORT=443`, `HTTPS_ENABLED=true`
 
-```bash
-git tag v1.0.1
-git push origin v1.0.1
-```
+The Docker MongoDB hostname is `mongdb-container`:
 
-Chạy tag cụ thể bằng cách đặt trong `.env`:
+`MONGO_DB_HOST=mongdb-container`, `MONGO_DB_PORT=27017`
 
-```env
-IMAGE_TAG=v1.0.1
-```
+Configure `JWT_SECRET`, MongoDB credentials, Gmail SMTP, Cloudflare R2, and Coturn values in `.env`. Use `.env.example` as the template.
 
-Sau đó cập nhật:
+Coturn uses ports `3478`, `5349`, and relay range `49160-49200`.
 
-```bash
-docker compose pull api
-docker compose up -d api
-```
+## Specific image versions
 
-## HTTPS và dịch vụ
+Images are published when a Git tag is pushed:
 
-API chạy trên port `443`:
+`git tag v1.0.1 && git push origin v1.0.1`
 
-```env
-HOST=0.0.0.0
-PORT=443
-HTTPS_ENABLED=true
-HTTPS_KEY_PATH=certs/key.pem
-HTTPS_CERT_PATH=certs/cert.pem
-```
+Set `IMAGE_TAG=v1.0.1` in `.env`, then update the API with `docker compose pull api && docker compose up -d api`.
 
-Coturn dùng port `3478`, TLS port `5349` và relay ports `49160-49200`. Cần mở các port này trên firewall/NAT nếu dùng WebRTC từ Internet.
+## Cloudflare Tunnel
 
-Cloudflare Tunnel có thể route API tới `https://localhost:443`. Coturn cần public IP/domain và UDP relay trực tiếp, không dùng route HTTPS thông thường của Tunnel.
+Create a Cloudflare published application route from `api.example.com` to `https://localhost:443`.
 
-## GitHub Actions deploy
+If the origin certificate is self-signed, configure `noTLSVerify` for the origin request or use a trusted certificate.
 
-Workflow `.github/workflows/docker-publish.yml` build/push image lên Docker Hub và có thể deploy qua Cloudflare SSH Tunnel.
+Coturn requires UDP relay traffic and should use a public IP/domain directly. Open ports `3478` and `49160-49200` in the firewall/NAT configuration; do not use a regular HTTPS Tunnel route for TURN.
 
-GitHub Secrets cần có:
+## GitHub Actions deployment
 
-```text
-DOCKERHUB_USERNAME
-DOCKERHUB_TOKEN
-DEPLOY_SSH_KEY
-DEPLOY_HOST
-DEPLOY_USER
-DEPLOY_PATH
-```
+`.github/workflows/docker-publish.yml` builds and publishes `sussybakacute/fastchat-backend` to Docker Hub and can deploy to a VM through Cloudflare SSH Tunnel.
 
-VM cần có `docker-compose.yml`, `.env`, thư mục `certs/`, Firebase credentials và `coturn/start-turn.sh`.
+Required GitHub Actions secrets are `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_USER`, and `DEPLOY_PATH`.
 
-## Chạy local không dùng Docker
+The VM must contain `docker-compose.yml`, `.env`, `certs/`, Firebase credentials, and `coturn/start-turn.sh`.
 
-```bash
-corepack enable
-pnpm install
-cp .env.example .env
-pnpm start:dev
-```
+## Local development
 
-Root endpoint: `GET /`.
+Requirements: Node.js 22 and pnpm.
 
-Chi tiết Coturn xem tại [docs/turn-server-setup.md](docs/turn-server-setup.md).
+`corepack enable && pnpm install && cp .env.example .env && pnpm start:dev`
 
-## Bảo mật
+The root endpoint is `GET /`. See [docs/turn-server-setup.md](docs/turn-server-setup.md) for Coturn details.
 
-Không commit `.env`, `firebase-service-account.json` hoặc `certs/key.pem`. Chỉ commit `.env.example` với giá trị mẫu.
+## Security
+
+Never commit `.env`, `firebase-service-account.json`, or `certs/key.pem`. Commit only `.env.example` with placeholder values.
