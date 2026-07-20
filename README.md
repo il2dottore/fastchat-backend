@@ -1,6 +1,6 @@
 # FastChat Backend
 
-Real-time chat backend built with NestJS, Socket.IO, MongoDB, Firebase Cloud Messaging, Cloudflare R2, and Coturn.
+Real-time chat backend for mobile client [FastChat Mobile](https://github.com/il2dottore/fastchat-mobile) built with NestJS, Socket.IO, MongoDB, Firebase Cloud Messaging, Cloudflare R2, and Coturn.
 
 ## Docker deployment
 
