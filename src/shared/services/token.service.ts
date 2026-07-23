@@ -1,6 +1,14 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongodb';
+import { getErrorMessage } from 'src/helpers/http.helper';
+
+interface AccessTokenPayload {
+  iat: number;
+  exp: number;
+  sub: string;
+  type: string;
+}
 
 @Injectable()
 export class TokenService {
@@ -28,14 +36,9 @@ export class TokenService {
     return this.jwtService.sign(refreshToken);
   }
 
-  decodeAccessToken(accessToken: string): {
-    iat: string;
-    exp: string;
-    sub: string;
-    type: string;
-  } {
+  decodeAccessToken(accessToken: string): AccessTokenPayload {
     try {
-      const payload = this.jwtService.verify(accessToken);
+      const payload = this.jwtService.verify<AccessTokenPayload>(accessToken);
       return {
         iat: payload.iat,
         exp: payload.exp,
@@ -43,7 +46,7 @@ export class TokenService {
         type: payload.type,
       };
     } catch (exception) {
-      throw new Error(exception.message);
+      throw new Error(getErrorMessage(exception));
     }
   }
 }

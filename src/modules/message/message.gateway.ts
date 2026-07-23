@@ -19,6 +19,34 @@ import { NotificationService } from '../notification/notification.service';
 import { Participant } from '../participant/schemas/participant.schema';
 import { ReactionService } from '../reaction/reaction.service';
 import { ReactionType } from '../reaction/schemas/reaction.schema';
+import { ParticipantRole } from '../participant/schemas/participant.schema';
+
+// Payload shapes for socket events.
+interface ConversationRoomPayload {
+  conversationId: string;
+}
+
+// Shape of a message document enriched by `socketMessagePipeline`.
+interface AggregatedMessageSender {
+  _id: ObjectId;
+  fullname: string | null;
+  avatarUrl?: string | null;
+}
+
+interface AggregatedMessage {
+  _id: ObjectId;
+  conversationId: ObjectId;
+  sender: AggregatedMessageSender;
+  senderRole?: ParticipantRole;
+  metadata: {
+    textContent?: string | null;
+    parentMessage?: unknown;
+  };
+  attachments?: unknown[];
+  isDeleted?: boolean;
+  isModified?: boolean;
+  createdAt: Date;
+}
 
 // Socket.IO server for messages processing.
 @WebSocketGateway({
@@ -193,7 +221,7 @@ export class MessageSocketGateway
   @SubscribeMessage('accessConversation')
   async accessConversation(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
+    @MessageBody() data: ConversationRoomPayload,
   ) {
     const conversationRoomName = 'conversation_' + data.conversationId;
     await client.join(conversationRoomName);
@@ -204,7 +232,7 @@ export class MessageSocketGateway
   @SubscribeMessage('quitConversation')
   async quitConversation(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
+    @MessageBody() data: ConversationRoomPayload,
   ) {
     const conversationRoomName = 'conversation_' + data.conversationId;
     await client.leave(conversationRoomName);
@@ -219,9 +247,9 @@ export class MessageSocketGateway
     console.log(message);
     const createdMessage = await this.messageService.createMessage(message);
     const pipeline = this.socketMessagePipeline(createdMessage._id);
-    const result = await this.entityManager
+    const result = (await this.entityManager
       .aggregate(Message, pipeline)
-      .toArray();
+      .toArray()) as AggregatedMessage[];
     const messageCreatedSocketResponse = result[0];
     console.log(messageCreatedSocketResponse);
     const targetConversationRoom =
@@ -250,10 +278,10 @@ export class MessageSocketGateway
     this.server.emit('lastMessageUpdated', lastMessageUpdatedResponse);
 
     // Send push notifications
-    this.sendPushNotifications(messageCreatedSocketResponse);
+    void this.sendPushNotifications(messageCreatedSocketResponse);
   }
 
-  private async sendPushNotifications(message: any) {
+  private async sendPushNotifications(message: AggregatedMessage) {
     try {
       const conversationId = new ObjectId(message.conversationId);
       const senderId = new ObjectId(message.sender._id);
@@ -333,15 +361,15 @@ export class MessageSocketGateway
 
     let canDelete = message.senderId.toString() === userId;
     if (!canDelete && senderParticipant) {
-      if (myParticipant.role === 'owner') {
+      if (myParticipant.role === ParticipantRole.OWNER) {
         if (
-          senderParticipant.role === 'member' ||
-          senderParticipant.role === 'administrator'
+          senderParticipant.role === ParticipantRole.MEMBER ||
+          senderParticipant.role === ParticipantRole.ADMINISTRATOR
         ) {
           canDelete = true;
         }
-      } else if (myParticipant.role === 'administrator') {
-        if (senderParticipant.role === 'member') {
+      } else if (myParticipant.role === ParticipantRole.ADMINISTRATOR) {
+        if (senderParticipant.role === ParticipantRole.MEMBER) {
           canDelete = true;
         }
       }
@@ -351,9 +379,9 @@ export class MessageSocketGateway
 
     const deletedMessage = await this.messageService.deleteMessage(messageId);
     const pipeline = this.socketMessagePipeline(deletedMessage);
-    const result = await this.entityManager
+    const result = (await this.entityManager
       .aggregate(Message, pipeline)
-      .toArray();
+      .toArray()) as AggregatedMessage[];
     const socketResponse = result[0];
     const targetConversationRoom =
       'conversation_' + socketResponse.conversationId.toString();
@@ -377,9 +405,9 @@ export class MessageSocketGateway
       body.textContent,
     );
     const pipeline = this.socketMessagePipeline(updatedMessage);
-    const result = await this.entityManager
+    const result = (await this.entityManager
       .aggregate(Message, pipeline)
-      .toArray();
+      .toArray()) as AggregatedMessage[];
     const socketResponse = result[0];
     const targetConversationRoom =
       'conversation_' + socketResponse.conversationId.toString();
@@ -480,7 +508,7 @@ export class MessageSocketGateway
     payload: { conversationId: string; userId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
-    client.join(roomName);
+    void client.join(roomName);
     console.log(`[Merged] User ${payload.userId} joined call room ${roomName}`);
     client.emit('joinedCall', { conversationId: payload.conversationId });
   }

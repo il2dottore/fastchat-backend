@@ -4,17 +4,12 @@ import {
   HttpException,
   HttpStatus,
   Post,
-  Req,
-  Res,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthUserDto } from './dtos/auth.dto';
 import { RegisterDto } from './dtos/register.dto';
-import { Request, Response } from 'express';
-import { error, success } from 'src/helpers/http.helper';
+import { error, getErrorMessage, success } from 'src/helpers/http.helper';
 import { AuthService } from './auth.service';
 import { TokenService } from 'src/shared/services/token.service';
-import { AuthGuard } from 'src/shared/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,10 +19,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async signIn(
-    @Body() signInDto: AuthUserDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async signIn(@Body() signInDto: AuthUserDto) {
     try {
       const authResult = await this.authService.auth(signInDto);
       const tokens = {
@@ -41,7 +33,7 @@ export class AuthController {
       );
       return success('Auth successfully', tokens);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -52,7 +44,7 @@ export class AuthController {
       console.log(signOutDto.userId, signOutDto.refreshToken);
       return success('Signed out');
     } catch (exception) {
-      return error(exception.message);
+      return error(getErrorMessage(exception));
     }
   }
 
@@ -66,7 +58,7 @@ export class AuthController {
       });
     } catch (exception) {
       throw new HttpException(
-        { success: false, message: exception.message, data: {} },
+        { success: false, message: getErrorMessage(exception), data: {} },
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -78,7 +70,7 @@ export class AuthController {
       await this.authService.requestPasswordChangeCode(body.email);
       return success('Verification code sent to your email');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -88,7 +80,7 @@ export class AuthController {
       await this.authService.verifyPasswordCode(body.email, body.code);
       return success('Code verified successfully');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -104,7 +96,7 @@ export class AuthController {
       );
       return success('Password changed successfully. Please login again.');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
   @Post('register')
@@ -113,7 +105,7 @@ export class AuthController {
       await this.authService.register(registerDto);
       return success('Registration successful. Please verify your email.');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -123,7 +115,7 @@ export class AuthController {
       await this.authService.verifyRegistration(body.email, body.code);
       return success('Account verified successfully. You can now login.');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -135,7 +127,7 @@ export class AuthController {
         await this.authService.checkAvailability(body.email, body.username),
       );
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 }

@@ -10,12 +10,17 @@ import {
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
 import { SetRoleDto } from './dto/set-role.dto';
-import { error, success } from 'src/helpers/http.helper';
+import { error, getErrorMessage, success } from 'src/helpers/http.helper';
 import { BanParticipantDto } from './dto/ban-participant.dto';
 import { Request } from 'express';
 import { ObjectId } from 'mongodb';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { KickParticipantDto } from './dto/kick-paricipant.dto';
+import { User } from '../user/schemas/user.schema';
+
+interface AuthenticatedRequest extends Request {
+  user: User;
+}
 
 @Controller('participants')
 export class ParticipantController {
@@ -24,12 +29,12 @@ export class ParticipantController {
   @Get('/me/:conversationId')
   @UseGuards(AuthGuard)
   async getMyParticipantInfo(
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
     @Param('conversationId') conversationId: string,
   ) {
     try {
       const result = await this.participantService.getParticipant(
-        new ObjectId(request['user']._id as string),
+        new ObjectId(request.user._id),
         new ObjectId(conversationId),
       );
       return success(
@@ -37,7 +42,7 @@ export class ParticipantController {
         result,
       );
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -45,10 +50,10 @@ export class ParticipantController {
   @Post('admin-actions/set-role')
   async setRole(@Body() setRoleDto: SetRoleDto) {
     try {
-      const result = await this.participantService.setRole(setRoleDto);
+      await this.participantService.setRole(setRoleDto);
       return success('Set role for user successfully');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -60,7 +65,7 @@ export class ParticipantController {
         await this.participantService.kickParticipant(kickParticipantDto);
       return success('Kick user successfully', result);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -74,7 +79,7 @@ export class ParticipantController {
       return success('Ban user successfully', result);
     } catch (exception) {
       console.log(exception);
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -90,41 +95,41 @@ export class ParticipantController {
       );
       return success('Unban user successfully', result);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
   @Post('leave')
   @UseGuards(AuthGuard)
   async leaveConversation(
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
     @Body() body: { conversationId: string },
   ) {
     try {
       await this.participantService.leaveConversation(
-        new ObjectId(request['user']._id),
+        new ObjectId(request.user._id),
         new ObjectId(body.conversationId),
       );
       return success('Left conversation successfully');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
   @Post('join')
   @UseGuards(AuthGuard)
   async joinConversation(
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
     @Body() body: { conversationId: string },
   ) {
     try {
       await this.participantService.joinConversation(
-        new ObjectId(request['user']._id),
+        new ObjectId(request.user._id),
         new ObjectId(body.conversationId),
       );
       return success('Joined conversation successfully');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 }

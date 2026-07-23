@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { error, success } from 'src/helpers/http.helper';
+import { error, getErrorMessage, success } from 'src/helpers/http.helper';
 import {
   AddContactDto,
   ContactService,
@@ -23,7 +23,7 @@ export class ContactController {
       const result = await this.contactService.create(createContactDto);
       return success('Contact added', result);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -33,7 +33,7 @@ export class ContactController {
       const result = await this.contactService.delete(deleteContactDto);
       return success('Contact deleted', result);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 }

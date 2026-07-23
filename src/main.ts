@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { SussyValidationPipe } from './pipes/validation.pipe';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions } from 'socket.io';
+import { Server, ServerOptions } from 'socket.io';
 
 const defaultEnvPath = '.env';
 dotenv.config({
@@ -13,13 +13,13 @@ dotenv.config({
 });
 
 export class CustomIoAdapter extends IoAdapter {
-  createIOServer(port: number, options?: ServerOptions): any {
-    const server = super.createIOServer(port, {
+  createIOServer(port: number, options?: ServerOptions): Server {
+    const server: Server = super.createIOServer(port, {
       ...options,
       transports: ['websocket', 'polling'],
       pingTimeout: 30000,
       pingInterval: 15000,
-    });
+    }) as Server;
     return server;
   }
 }
@@ -57,4 +57,4 @@ async function bootstrap() {
   app.useWebSocketAdapter(new CustomIoAdapter(app));
   await app.listen(port, host);
 }
-bootstrap();
+void bootstrap();

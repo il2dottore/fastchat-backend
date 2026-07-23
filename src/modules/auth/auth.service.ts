@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { MongoEntityManager, ObjectId } from 'typeorm';
+import { FilterOperators, MongoEntityManager, ObjectId } from 'typeorm';
 import { AuthToken } from './schemas/auth-token.schema';
 import { UserService } from '../user/user.service';
 import { AuthUserDto } from './dtos/auth.dto';
 import { RegisterDto } from './dtos/register.dto';
-import { User } from '../user/schemas/user.schema';
+import { User, UserStatus } from '../user/schemas/user.schema';
 import bcrypt from 'bcrypt';
 import { TokenService } from 'src/shared/services/token.service';
 
@@ -36,13 +36,13 @@ export class AuthService {
     });
     if (user.length !== 1)
       throw new Error('No user associated with this email address');
-    const authUser = user[0];
     const authResult = await bcrypt.compare(
       authUserDto.password,
       user[0].password,
     );
     if (authResult) {
-      const { password, ...authUser } = user[0];
+      const { password: _password, ...authUser } = user[0];
+      void _password;
       return authUser;
     } else throw new Error('Login credentials did not match');
   }
@@ -67,7 +67,10 @@ export class AuthService {
         $unwind: '$user',
       },
     ];
-    const authTokenPair = this.entityManager.aggregate(AuthToken, pipeline);
+    const authTokenPair = this.entityManager.aggregate<
+      AuthToken,
+      AuthToken & { user: User }
+    >(AuthToken, pipeline);
     const result = await authTokenPair.toArray();
     if (0 === result.length)
       throw new Error(
@@ -111,7 +114,7 @@ export class AuthService {
       where: {
         email: email,
         code: code,
-        expiresAt: { $gt: new Date() } as any,
+        expiresAt: { $gt: new Date() } as FilterOperators<Date>,
       },
     });
 
@@ -148,9 +151,9 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const user = await this.userService.create({
       ...registerDto,
-      avatarUrl: null as any,
-      lastOnline: null as any,
-      userStatus: null as any,
+      avatarUrl: null as unknown as string,
+      lastOnline: null as unknown as Date,
+      userStatus: null as unknown as UserStatus,
     });
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();

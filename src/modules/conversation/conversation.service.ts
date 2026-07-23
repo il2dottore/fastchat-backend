@@ -22,6 +22,11 @@ import { BlockedUser } from '../chat-logic/schemas/blocked-user.schema';
 import { UploadService } from '../upload/upload.service';
 import { MessageSocketGateway } from '../message/message.gateway';
 
+export interface InviteUserPayload {
+  inviter: string;
+  invitedEmail: string;
+}
+
 export const getMessagesFromConversationPipeline = (
   conversationObjectId: ObjectId,
 ) => [
@@ -233,11 +238,11 @@ export class ConversationService {
       excludeExtraneousValues: true,
     });
 
-    switch (createConversationDto.type) {
+    switch (createConversationDto.type as ConversationType) {
       // --------------------------------------------
       // Validate create direct conversation request
       // --------------------------------------------
-      case ConversationType.DIRECT:
+      case ConversationType.DIRECT: {
         // Check if 2 users already have direct conversation or not
         const canCreateDirectConversation =
           await this.participantService.canCreateDirectConversation(
@@ -257,6 +262,7 @@ export class ConversationService {
           createConversationDto.metadata,
         );
         break;
+      }
 
       // --------------------------------------------
       // Validate create group conversation request
@@ -392,7 +398,10 @@ export class ConversationService {
         },
       },
     ];
-    const participants = this.entityManager.aggregate(Participant, pipeline);
+    const participants = this.entityManager.aggregate<
+      Participant,
+      Record<string, unknown>
+    >(Participant, pipeline);
     return await participants.toArray();
   }
 
@@ -409,7 +418,9 @@ export class ConversationService {
       },
     });
     if (null === conversation)
-      throw new Error(`Does not exist conversation ${conversationId}`);
+      throw new Error(
+        `Does not exist conversation ${conversationId.toString()}`,
+      );
 
     const checkParticipant =
       await this.participantService.conversationHasParticipant(
@@ -429,16 +440,19 @@ export class ConversationService {
 
   async getMessages(conversationObjectId: ObjectId) {
     const pipeline = getMessagesFromConversationPipeline(conversationObjectId);
-    const messages = this.entityManager.aggregate(Message, pipeline);
+    const messages = this.entityManager.aggregate<
+      Message,
+      Record<string, unknown>
+    >(Message, pipeline);
     return await messages.toArray();
   }
 
   async inviteUserToConversation(
     conversationId: ObjectId,
-    invitationPayload: any,
+    invitationPayload: InviteUserPayload,
   ) {
-    const inviterObjectId = new ObjectId(invitationPayload.inviter as string);
-    const invitedEmail = invitationPayload.invitedEmail as string;
+    const inviterObjectId = new ObjectId(invitationPayload.inviter);
+    const invitedEmail = invitationPayload.invitedEmail;
     const conversationObjectId = new ObjectId(conversationId);
 
     const inviterInGroup =
@@ -556,7 +570,7 @@ export class ConversationService {
       },
     ];
     const cursor = await this.entityManager
-      .aggregate(BlockedUser, blockedUserPipeline)
+      .aggregate<BlockedUser, BlockedUser>(BlockedUser, blockedUserPipeline)
       .toArray();
     const result = cursor.pop();
     return result ?? null;
@@ -565,7 +579,9 @@ export class ConversationService {
   async blockUser(blockUserDto: BlockUserDto) {
     const alreadyBlockPair = await this.checkBlockPair(blockUserDto);
     if (null !== alreadyBlockPair) {
-      throw new Error('Already had this block pair ' + alreadyBlockPair);
+      throw new Error(
+        'Already had this block pair ' + alreadyBlockPair._id.toString(),
+      );
     }
     await this.entityManager.save(BlockedUser, {
       blockerUserId: new ObjectId(blockUserDto.blockerUserId),
@@ -575,7 +591,7 @@ export class ConversationService {
 
   async updateConversation(
     conversationId: string,
-    updateConversationData: any,
+    updateConversationData: Record<string, unknown>,
   ) {
     await this.entityManager.updateOne(
       Conversation,

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { BlockUserDto } from './dtos/block-user.dto';
 import { ChatLogicService } from './chat-logic.service';
-import { error, success } from 'src/helpers/http.helper';
+import { error, getErrorMessage, success } from 'src/helpers/http.helper';
 
 @Controller('chat-logic')
 export class ChatLogicController {
@@ -13,7 +13,7 @@ export class ChatLogicController {
       await this.chatLogicService.blockUser(blockUserDto);
       return success('Blocked');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -24,7 +24,7 @@ export class ChatLogicController {
       await this.chatLogicService.deleteBlockPair(blockUserDto);
       return success('Block pair deleted');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -35,7 +35,7 @@ export class ChatLogicController {
       const result = await this.chatLogicService.getBlockedList(userId);
       return success('Blocked', result);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 }

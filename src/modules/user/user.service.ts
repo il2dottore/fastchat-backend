@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FilterOperators, FindManyOptions, MongoEntityManager } from 'typeorm';
-import { User } from './schemas/user.schema';
+import { User, UserStatus } from './schemas/user.schema';
 import { CreateUserDto } from '../conversation/dtos/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import bcrypt from 'bcrypt';
@@ -147,13 +147,16 @@ export class UserService {
         },
       },
     ];
-    const cursor = this.entityManager.aggregate(Participant, pipeline);
+    const cursor = this.entityManager.aggregate<
+      Participant,
+      Record<string, unknown>
+    >(Participant, pipeline);
     return await cursor.toArray();
   }
 
   async updateUserStatus(userId: ObjectId, status: string) {
     return await this.entityManager.update(User, userId, {
-      userStatus: status as any,
+      userStatus: status as UserStatus,
       lastOnline: status === 'offline' ? new Date() : undefined,
     });
   }

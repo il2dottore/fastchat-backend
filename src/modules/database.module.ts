@@ -6,7 +6,6 @@ import { Conversation } from './conversation/schemas/conversation.schema';
 import { Participant } from './participant/schemas/participant.schema';
 import { AuthToken } from './auth/schemas/auth-token.schema';
 import { Message } from './message/schemas/message.schema';
-import { ContactModule } from './contact/contact.module';
 import { Contact } from './contact/schemas/contact.schema';
 import { BlockedUser } from './chat-logic/schemas/blocked-user.schema';
 import { VerificationCode } from './auth/schemas/verification-code.schema';

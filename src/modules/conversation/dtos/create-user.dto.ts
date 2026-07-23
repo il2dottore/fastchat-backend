@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsOptional,
-  IsString,
 } from 'class-validator';
 import { UserStatus } from '../../user/schemas/user.schema';
 

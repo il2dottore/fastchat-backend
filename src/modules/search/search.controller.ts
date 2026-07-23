@@ -12,15 +12,14 @@ export class SearchController {
     if (null === user) {
       throw error('User not found');
     }
-    const { password, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user };
+    delete (userWithoutPassword as Partial<typeof userWithoutPassword>)
+      .password;
     return success('User', userWithoutPassword);
   }
 
   @Get('participant/:conversationId/name/:participantName')
-  async searchParticipantByName(
-    @Param('email') conversationId: string,
-    @Param('email') participantName: string,
-  ) {}
+  searchParticipantByName() {}
 
   @Get('message/:conversationId')
   async searchMessageByKeyword(

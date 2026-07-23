@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer';
 import { IsArray, IsObject, IsString } from 'class-validator';
 import {
   DirectConversationMetadata,
@@ -17,5 +16,5 @@ export class CreateConversationDto {
   owners: string[];
 
   @IsObject()
-  metadata: any;
+  metadata: DirectConversationMetadata | GroupConversationMetadata;
 }

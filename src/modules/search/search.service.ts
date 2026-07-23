@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MongoEntityManager } from 'typeorm';
+import { FindOptionsWhere, MongoEntityManager } from 'typeorm';
 import { User } from '../user/schemas/user.schema';
 import { ObjectId } from 'mongodb';
 import { Message } from '../message/schemas/message.schema';
@@ -76,14 +76,15 @@ export class SearchService {
 
   async searchGlobal(keyword: string) {
     // Search users
+    const userFilter: FindOptionsWhere<User> = {
+      $or: [
+        { username: { $regex: keyword, $options: 'i' } },
+        { fullname: { $regex: keyword, $options: 'i' } },
+        { email: { $regex: keyword, $options: 'i' } },
+      ],
+    } as FindOptionsWhere<User>;
     const users = await this.entityManager.find(User, {
-      where: {
-        $or: [
-          { username: { $regex: keyword, $options: 'i' } },
-          { fullname: { $regex: keyword, $options: 'i' } },
-          { email: { $regex: keyword, $options: 'i' } },
-        ],
-      } as any,
+      where: userFilter,
       take: 10,
     });
 
@@ -134,7 +135,8 @@ export class SearchService {
 
     return {
       users: users.map((u) => {
-        const { password, ...rest } = u;
+        const rest = { ...u };
+        delete (rest as Partial<typeof rest>).password;
         return rest;
       }),
       groups,

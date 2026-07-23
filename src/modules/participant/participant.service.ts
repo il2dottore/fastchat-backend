@@ -3,6 +3,8 @@ import { Participant, ParticipantRole } from './schemas/participant.schema';
 import {
   Conversation,
   ConversationType,
+  GroupAccessibility,
+  GroupConversationMetadata,
 } from '../conversation/schemas/conversation.schema';
 import { ObjectId } from 'mongodb';
 import { MongoEntityManager } from 'typeorm';
@@ -57,7 +59,10 @@ export class ParticipantService {
         },
       },
     ];
-    const participants = this.entityManager.aggregate(Participant, pipeline);
+    const participants = this.entityManager.aggregate<
+      Participant,
+      Record<string, unknown>
+    >(Participant, pipeline);
     return await participants.toArray();
   }
 
@@ -119,7 +124,10 @@ export class ParticipantService {
       },
     ];
 
-    const cursor = this.entityManager.aggregate(Participant, pipeline);
+    const cursor = this.entityManager.aggregate<
+      Participant,
+      Record<string, unknown>
+    >(Participant, pipeline);
     const directConversation = await cursor.toArray();
     return directConversation.length > 0 ? directConversation[0] : null;
   }
@@ -139,7 +147,7 @@ export class ParticipantService {
   async setRole(setRoleDto: SetRoleDto) {
     const allowedRole = ['owner', 'administrator', 'member'];
     if (!allowedRole.includes(setRoleDto.participantRole)) {
-      throw new Error('Invalid role, must be ' + allowedRole);
+      throw new Error('Invalid role, must be ' + allowedRole.join(', '));
     }
     const participantSetter = await this.getParticipant(
       setRoleDto.setterUserId,
@@ -267,7 +275,7 @@ export class ParticipantService {
       where: { _id: conversationId },
     });
     if (!conversation) throw new Error('Conversation not found');
-    if (conversation.type !== ConversationType.GROUP) {
+    if ((conversation.type as ConversationType) !== ConversationType.GROUP) {
       throw new Error('Only group conversations can be left');
     }
 
@@ -290,13 +298,13 @@ export class ParticipantService {
       where: { _id: conversationId },
     });
     if (!conversation) throw new Error('Conversation not found');
-    if (conversation.type !== ConversationType.GROUP) {
+    if ((conversation.type as ConversationType) !== ConversationType.GROUP) {
       throw new Error('Only group conversations can be joined');
     }
 
     // Check accessibility
-    const metadata = conversation.metadata as any;
-    if (metadata.accessibility !== 'public') {
+    const metadata = conversation.metadata as GroupConversationMetadata;
+    if (metadata.accessibility !== GroupAccessibility.PUBLIC) {
       throw new Error('This group is private');
     }
 

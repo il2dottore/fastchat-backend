@@ -4,6 +4,12 @@ import { BlockUserDto } from './dtos/block-user.dto';
 import { MongoEntityManager } from 'typeorm';
 import { BlockedUser } from './schemas/blocked-user.schema';
 
+interface BlockedListEntry {
+  _id: ObjectId;
+  createdAt: Date;
+  blockedUser: Record<string, unknown>;
+}
+
 @Injectable()
 export class ChatLogicService {
   constructor(private readonly entityManager: MongoEntityManager) {}
@@ -21,7 +27,7 @@ export class ChatLogicService {
       },
     ];
     const cursor = await this.entityManager
-      .aggregate(BlockedUser, blockedUserPipeline)
+      .aggregate<BlockedUser, BlockedUser>(BlockedUser, blockedUserPipeline)
       .toArray();
     const result = cursor.pop();
     return result ?? null;
@@ -30,7 +36,9 @@ export class ChatLogicService {
   async blockUser(blockUserDto: BlockUserDto) {
     const alreadyBlockPair = await this.checkBlockPair(blockUserDto);
     if (null !== alreadyBlockPair) {
-      throw new Error('Already had this block pair ' + alreadyBlockPair._id);
+      throw new Error(
+        'Already had this block pair ' + alreadyBlockPair._id.toString(),
+      );
     }
     await this.entityManager.save(BlockedUser, {
       blockerUserId: new ObjectId(blockUserDto.blockerUserId),
@@ -83,7 +91,7 @@ export class ChatLogicService {
       },
     ];
     const blockList = await this.entityManager
-      .aggregate(BlockedUser, pipeline)
+      .aggregate<BlockedUser, BlockedListEntry>(BlockedUser, pipeline)
       .toArray();
     return blockList;
   }

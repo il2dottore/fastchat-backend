@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dtos/create-message.dto';
-import { error, success } from 'src/helpers/http.helper';
+import { error, success, getErrorMessage } from 'src/helpers/http.helper';
 import { ObjectId } from 'mongodb';
 
 @Controller('messages')
@@ -15,14 +15,14 @@ export class MessageController {
         senderId: '68f7bf08e5780a024d105b3c',
         metadata: {
           parentId: '6925ddd07e0fdf9b7d626efa',
-          textContent: 'nigger',
+          textContent: '',
         },
         attachments: [],
       };
       const message = await this.messageService.createMessage(createMessageDto);
       return success('Message created successfully', message);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 

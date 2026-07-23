@@ -10,13 +10,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateConversationDto } from './dtos/create-conversation.dto';
-import { ConversationService } from './conversation.service';
-import { error, success } from 'src/helpers/http.helper';
+import { ConversationService, InviteUserPayload } from './conversation.service';
+import { error, getErrorMessage, success } from 'src/helpers/http.helper';
 import { ObjectId } from 'mongodb';
 import { JoinConversationDto } from './dtos/join-conversation.dto';
 import { Request } from 'express';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { BlockUserDto } from '../chat-logic/dtos/block-user.dto';
+import { User } from '../user/schemas/user.schema';
+
+interface AuthenticatedRequest extends Request {
+  user?: User;
+}
 
 @Controller('conversations')
 export class ConversationController {
@@ -31,7 +35,7 @@ export class ConversationController {
       );
       return success('Conversation created successfully.', conversation);
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -40,7 +44,7 @@ export class ConversationController {
   async updateConversation(
     @Param('conversationId') conversationId: string,
     @Req() request: Request,
-    @Body() updateConversationData: any,
+    @Body() updateConversationData: Record<string, unknown>,
   ) {
     await this.conversationService.updateConversation(
       conversationId,
@@ -52,9 +56,9 @@ export class ConversationController {
   @Get(':conversationId')
   async getConversation(
     @Param('conversationId') conversationId: string,
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
   ) {
-    const user = request['user'];
+    const user = request.user as User;
     try {
       const result = await this.conversationService.getConversation(
         user,
@@ -64,16 +68,16 @@ export class ConversationController {
     } catch (exception) {
       console.log(
         'ConversationController - getConversation() error',
-        exception.message,
+        getErrorMessage(exception),
       );
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
   @Post(':conversationId/invitation')
   async inviteUserToConversation(
     @Param('conversationId') conversationId: string,
-    @Body() invitationPayload: any,
+    @Body() invitationPayload: InviteUserPayload,
   ) {
     try {
       await this.conversationService.inviteUserToConversation(
@@ -83,19 +87,19 @@ export class ConversationController {
       return success('This user has been invited successfully.');
     } catch (exception) {
       console.log(exception);
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
   @UseGuards(AuthGuard)
   @Delete(':conversationId')
-  async deleteConversation(
+  deleteConversation(
     @Param('conversationId') conversationId: string,
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
   ) {
     try {
       const conversationObjectId = new ObjectId(conversationId);
-      const user = request['user']._id as string;
+      const user = request.user?._id;
 
       // Run in background as requested
       this.conversationService
@@ -106,30 +110,30 @@ export class ConversationController {
 
       return success('Conversation deletion started');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
   @UseGuards(AuthGuard)
   @Delete(':conversationId/leave')
-  async leaveConversation(
+  leaveConversation(
     @Param('conversationId') conversationId: string,
-    @Req() request: Request,
+    @Req() request: AuthenticatedRequest,
   ) {
     try {
       const conversationObjectId = new ObjectId(conversationId);
-      const userId = request['user']._id;
+      const userId = request.user?._id;
 
       // Run in background as requested
       this.conversationService
-        .leaveConversation(userId, conversationObjectId)
+        .leaveConversation(new ObjectId(userId), conversationObjectId)
         .catch((err) =>
           console.error('Background leaveConversation error:', err),
         );
 
       return success('Leaving conversation...');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 
@@ -147,7 +151,7 @@ export class ConversationController {
     const messages =
       await this.conversationService.getMessages(conversationObjectId);
     return success(
-      `Message from conversation ${conversationObjectId}`,
+      `Message from conversation ${conversationObjectId.toString()}`,
       messages,
     );
   }
@@ -165,7 +169,7 @@ export class ConversationController {
       );
       return success('Joined');
     } catch (exception) {
-      throw error(exception.message);
+      throw error(getErrorMessage(exception));
     }
   }
 }

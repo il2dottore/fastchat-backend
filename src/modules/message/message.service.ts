@@ -9,6 +9,19 @@ import { ParticipantService } from '../participant/participant.service';
 import { Conversation } from '../conversation/schemas/conversation.schema';
 import { UploadService } from '../upload/upload.service';
 
+interface LastMessageResult {
+  _id: ObjectId;
+  conversationId: ObjectId;
+  sender: {
+    _id: ObjectId;
+    fullname: string | null;
+  };
+  metadata: {
+    textContent?: string | null;
+  };
+  createdAt: Date;
+}
+
 @Injectable()
 export class MessageService {
   constructor(
@@ -104,7 +117,7 @@ export class MessageService {
     if (null === foundParentMessage) {
       throw new Error(
         'canCreateReplyMessage error: Not found parent message with ID: ' +
-          parentMessageObjectId,
+          parentMessageObjectId.toString(),
       );
     }
 
@@ -116,7 +129,7 @@ export class MessageService {
     )
       throw new Error(
         'canCreateReplyMessage error: The target conversation does not have any message with ID ' +
-          parentMessageObjectId,
+          parentMessageObjectId.toString(),
       );
 
     return new ObjectId(parentMessageObjectId);
@@ -127,12 +140,17 @@ export class MessageService {
    * @param forwardedMessageObjectId
    * @param targetConversationObjectId
    */
-  async canCreateForwardedMessage(
+  canCreateForwardedMessage(
     forwardedMessageObjectId: ObjectId,
     targetConversationObjectId: ObjectId,
-  ) {}
+  ) {
+    void forwardedMessageObjectId;
+    void targetConversationObjectId;
+  }
 
-  async getLastMessageFromConversations(userId: ObjectId) {
+  async getLastMessageFromConversations(
+    userId: ObjectId,
+  ): Promise<LastMessageResult[]> {
     const pipeline = [
       {
         $match: {
@@ -198,7 +216,7 @@ export class MessageService {
     ];
 
     const cursor = this.entityManager.aggregate(Message, pipeline);
-    return await cursor.toArray();
+    return (await cursor.toArray()) as LastMessageResult[];
   }
 
   async deleteMessage(messageId: ObjectId) {

@@ -30,7 +30,7 @@ export class CallGateway implements OnGatewayConnection, OnGatewayDisconnect {
     payload: { conversationId: string; userId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
-    client.join(roomName);
+    void client.join(roomName);
     console.log(`User ${payload.userId} joined call room ${roomName}`);
     client.emit('joinedCall', { conversationId: payload.conversationId });
   }

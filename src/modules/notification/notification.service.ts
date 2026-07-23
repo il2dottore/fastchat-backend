@@ -18,7 +18,7 @@ export class NotificationService implements OnModuleInit {
       if (fs.existsSync(serviceAccountPath)) {
         const serviceAccount = JSON.parse(
           fs.readFileSync(serviceAccountPath, 'utf8'),
-        );
+        ) as admin.ServiceAccount;
 
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount),
@@ -42,7 +42,7 @@ export class NotificationService implements OnModuleInit {
     token: string,
     title: string,
     body: string,
-    data?: any,
+    data?: Record<string, string>,
   ): Promise<string | undefined> {
     if (!this.isFirebaseInitialized) {
       console.warn('Firebase not initialized. Skipping notification.');
@@ -71,7 +71,7 @@ export class NotificationService implements OnModuleInit {
     tokens: string[],
     title: string,
     body: string,
-    data?: any,
+    data?: Record<string, string>,
   ): Promise<BatchResponse | undefined> {
     if (!this.isFirebaseInitialized || tokens.length === 0) {
       return;
