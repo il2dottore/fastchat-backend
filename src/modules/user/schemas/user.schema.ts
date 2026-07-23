@@ -24,12 +24,12 @@ export class User {
   username: string | null;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   password: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   fullname: string | null;
 
@@ -60,7 +60,7 @@ export class User {
   })
   fcmToken: string | null;
   @Column({
-    default: false
+    default: false,
   })
   isVerified: boolean;
 }

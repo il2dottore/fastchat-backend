@@ -7,9 +7,7 @@ import { Conversation } from '../conversation/schemas/conversation.schema';
 
 @Injectable()
 export class SearchService {
-  constructor(
-    private readonly entityManager: MongoEntityManager
-  ) { }
+  constructor(private readonly entityManager: MongoEntityManager) {}
   async searchUserByEmail(email: string) {
     return await this.entityManager.findOne(User, {
       where: {
@@ -18,10 +16,7 @@ export class SearchService {
     });
   }
 
-  async searchMessageByKeyword(
-    conversationId: ObjectId,
-    keyword: string,
-  ) {
+  async searchMessageByKeyword(conversationId: ObjectId, keyword: string) {
     const pipeline = [
       {
         $match: {
@@ -36,7 +31,7 @@ export class SearchService {
         $project: {
           _id: 1,
           metadata: {
-            textContent: 1
+            textContent: 1,
           },
           senderId: 1,
           createdAt: 1,
@@ -79,7 +74,6 @@ export class SearchService {
     return this.entityManager.aggregate(Message, pipeline).toArray();
   }
 
-
   async searchGlobal(keyword: string) {
     // Search users
     const users = await this.entityManager.find(User, {
@@ -88,9 +82,9 @@ export class SearchService {
           { username: { $regex: keyword, $options: 'i' } },
           { fullname: { $regex: keyword, $options: 'i' } },
           { email: { $regex: keyword, $options: 'i' } },
-        ]
+        ],
       } as any,
-      take: 10
+      take: 10,
     });
 
     // Search public groups
@@ -102,8 +96,8 @@ export class SearchService {
             { 'metadata.groupName': { $regex: keyword, $options: 'i' } },
             { 'metadata.inviteSlug': { $regex: keyword, $options: 'i' } },
           ],
-          'metadata.accessibility': 'public'
-        }
+          'metadata.accessibility': 'public',
+        },
       },
       {
         $lookup: {
@@ -112,33 +106,38 @@ export class SearchService {
           pipeline: [
             {
               $match: {
-                $expr: { $eq: ['$conversationId', '$$cid'] }
-              }
+                $expr: { $eq: ['$conversationId', '$$cid'] },
+              },
             },
-            { $count: 'count' }
+            { $count: 'count' },
           ],
-          as: 'participantCountLookup'
-        }
+          as: 'participantCountLookup',
+        },
       },
       {
         $addFields: {
           participantCount: {
-            $ifNull: [{ $arrayElemAt: ['$participantCountLookup.count', 0] }, 0]
-          }
-        }
+            $ifNull: [
+              { $arrayElemAt: ['$participantCountLookup.count', 0] },
+              0,
+            ],
+          },
+        },
       },
       { $project: { participantCountLookup: 0 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ];
 
-    const groups = await this.entityManager.aggregate(Conversation, groupsPipeline).toArray();
+    const groups = await this.entityManager
+      .aggregate(Conversation, groupsPipeline)
+      .toArray();
 
     return {
-      users: users.map(u => {
+      users: users.map((u) => {
         const { password, ...rest } = u;
         return rest;
       }),
-      groups
+      groups,
     };
   }
 }

@@ -6,9 +6,7 @@ import { ObjectId } from 'mongodb';
 
 @Controller('messages')
 export class MessageController {
-  constructor(
-    private readonly messageService: MessageService
-  ) { }
+  constructor(private readonly messageService: MessageService) {}
   @Get('test')
   async createMessage() {
     try {
@@ -29,12 +27,11 @@ export class MessageController {
   }
 
   @Get('last-messages/:userId')
-  async getLastMessages(
-    @Param('userId') userId: string
-  ) {
-    const lastMessages = await this.messageService.getLastMessageFromConversations(
-      new ObjectId(userId),
-    );
+  async getLastMessages(@Param('userId') userId: string) {
+    const lastMessages =
+      await this.messageService.getLastMessageFromConversations(
+        new ObjectId(userId),
+      );
     return success('Last message', lastMessages);
   }
 }

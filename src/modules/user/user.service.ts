@@ -9,20 +9,20 @@ import { Participant } from '../participant/schemas/participant.schema';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly entityManager: MongoEntityManager,
-  ) {
-  }
+  constructor(private readonly entityManager: MongoEntityManager) {}
 
-  async find(optionsOrConditions?: FindManyOptions<User> | Partial<User> | FilterOperators<User>) {
+  async find(
+    optionsOrConditions?:
+      FindManyOptions<User> | Partial<User> | FilterOperators<User>,
+  ) {
     return await this.entityManager.find(User, optionsOrConditions);
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const emailExists = await this.entityManager.findOne(User, {
       where: {
-        email: createUserDto.email
-      }
+        email: createUserDto.email,
+      },
     });
     if (emailExists) {
       throw new Error('This email is already in used');
@@ -31,8 +31,8 @@ export class UserService {
     if (createUserDto.username) {
       const usernameExists = await this.entityManager.findOne(User, {
         where: {
-          username: createUserDto.username
-        }
+          username: createUserDto.username,
+        },
       });
       if (usernameExists) {
         throw new Error('This username is already in used');
@@ -47,11 +47,15 @@ export class UserService {
   }
 
   async checkAvailability(email: string, username: string) {
-    const emailExists = await this.entityManager.findOne(User, { where: { email } });
-    const usernameExists = await this.entityManager.findOne(User, { where: { username } });
+    const emailExists = await this.entityManager.findOne(User, {
+      where: { email },
+    });
+    const usernameExists = await this.entityManager.findOne(User, {
+      where: { username },
+    });
     return {
       emailAvailable: !emailExists,
-      usernameAvailable: !usernameExists
+      usernameAvailable: !usernameExists,
     };
   }
 
@@ -67,24 +71,24 @@ export class UserService {
     const pipeline = [
       {
         $match: {
-          userId: userObjectId
-        }
+          userId: userObjectId,
+        },
       },
       {
         $lookup: {
           from: 'conversations',
           localField: 'conversationId',
           foreignField: '_id',
-          as: 'conversation'
-        }
+          as: 'conversation',
+        },
       },
       {
-        $unwind: '$conversation'
+        $unwind: '$conversation',
       },
       {
         $replaceRoot: {
-          newRoot: '$conversation'
-        }
+          newRoot: '$conversation',
+        },
       },
       {
         $lookup: {
@@ -97,9 +101,9 @@ export class UserService {
                   $and: [
                     { $eq: ['$conversationId', '$$convId'] },
                     { $ne: ['$userId', userObjectId] },
-                  ]
-                }
-              }
+                  ],
+                },
+              },
             },
             { $limit: 1 },
             {
@@ -107,8 +111,8 @@ export class UserService {
                 from: 'users',
                 localField: 'userId',
                 foreignField: '_id',
-                as: 'userInfo'
-              }
+                as: 'userInfo',
+              },
             },
             { $unwind: '$userInfo' },
             {
@@ -118,12 +122,12 @@ export class UserService {
                 username: '$userInfo.username',
                 avatarUrl: '$userInfo.avatarUrl',
                 userStatus: '$userInfo.userStatus',
-                lastOnline: '$userInfo.lastOnline'
-              }
-            }
+                lastOnline: '$userInfo.lastOnline',
+              },
+            },
           ],
-          as: 'partnerData'
-        }
+          as: 'partnerData',
+        },
       },
 
       {
@@ -132,16 +136,16 @@ export class UserService {
             $cond: {
               if: { $eq: ['$type', 'direct'] },
               then: { $arrayElemAt: ['$partnerData', 0] },
-              else: '$$REMOVE'
-            }
-          }
-        }
+              else: '$$REMOVE',
+            },
+          },
+        },
       },
       {
         $project: {
-          partnerData: 0
-        }
-      }
+          partnerData: 0,
+        },
+      },
     ];
     const cursor = this.entityManager.aggregate(Participant, pipeline);
     return await cursor.toArray();

@@ -15,7 +15,6 @@ import { ChatLogicModule } from './modules/chat-logic/chat-logic.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
 
-
 @Global()
 @Module({
   controllers: [AppController],
@@ -40,6 +39,6 @@ import { ReactionModule } from './modules/reaction/reaction.module';
     ReactionModule,
   ],
   providers: [TokenService],
-  exports: [TokenService]
+  exports: [TokenService],
 })
-export class AppModule { }
+export class AppModule {}

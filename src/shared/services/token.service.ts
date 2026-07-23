@@ -1,12 +1,10 @@
-import { Injectable, Scope } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { ObjectId } from "mongodb";
+import { Injectable, Scope } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class TokenService {
-  constructor(
-    private readonly jwtService: JwtService
-  ) { }
+  constructor(private readonly jwtService: JwtService) {}
   // JWT token functions
   signAccessToken(userId: ObjectId) {
     const accessToken = {

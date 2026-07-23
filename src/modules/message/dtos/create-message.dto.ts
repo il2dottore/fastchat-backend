@@ -1,4 +1,4 @@
-import { MessageAttachment } from "../schemas/message.schema";
+import { MessageAttachment } from '../schemas/message.schema';
 
 export class CreateMessageDto {
   conversationId: string;

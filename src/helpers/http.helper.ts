@@ -4,12 +4,15 @@ function response(success: boolean, message: string, data: any = {}) {
   return {
     success,
     message,
-    data
+    data,
   };
 }
 
 export function error(message: string, data: any = {}) {
-  return new HttpException(response(false, message, data), HttpStatus.BAD_REQUEST);;
+  return new HttpException(
+    response(false, message, data),
+    HttpStatus.BAD_REQUEST,
+  );
 }
 
 export function success(message: string, data: any = {}) {

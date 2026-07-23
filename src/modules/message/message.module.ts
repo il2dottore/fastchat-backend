@@ -20,4 +20,4 @@ import { ReactionModule } from '../reaction/reaction.module';
   ],
   exports: [MessageService, MessageSocketGateway],
 })
-export class MessageModule { }
+export class MessageModule {}

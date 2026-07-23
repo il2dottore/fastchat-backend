@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb";
-import { Column, CreateDateColumn, Entity, ObjectIdColumn } from "typeorm";
+import { ObjectId } from 'mongodb';
+import { Column, CreateDateColumn, Entity, ObjectIdColumn } from 'typeorm';
 
 @Entity({
-  name: 'auth_tokens'
+  name: 'auth_tokens',
 })
 export class AuthToken {
   @ObjectIdColumn()

@@ -4,6 +4,6 @@ import { ChatLogicService } from './chat-logic.service';
 
 @Module({
   controllers: [ChatLogicController],
-  providers: [ChatLogicService]
+  providers: [ChatLogicService],
 })
 export class ChatLogicModule {}

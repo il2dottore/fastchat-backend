@@ -6,9 +6,7 @@ import { BlockedUser } from './schemas/blocked-user.schema';
 
 @Injectable()
 export class ChatLogicService {
-  constructor(private readonly entityManager: MongoEntityManager) {
-
-  }
+  constructor(private readonly entityManager: MongoEntityManager) {}
   async checkBlockPair(blockUserDto: BlockUserDto) {
     const blockedUserPipeline = [
       {
@@ -22,7 +20,9 @@ export class ChatLogicService {
         },
       },
     ];
-    const cursor = await this.entityManager.aggregate(BlockedUser, blockedUserPipeline).toArray();
+    const cursor = await this.entityManager
+      .aggregate(BlockedUser, blockedUserPipeline)
+      .toArray();
     const result = cursor.pop();
     return result ?? null;
   }
@@ -54,35 +54,37 @@ export class ChatLogicService {
       {
         $match: {
           blockerUserId: new ObjectId(userId),
-        }
+        },
       },
       {
         $lookup: {
-          from: "users",
-          localField: "blockedUserId",
-          foreignField: "_id",
-          as: "blockedUser",
+          from: 'users',
+          localField: 'blockedUserId',
+          foreignField: '_id',
+          as: 'blockedUser',
           pipeline: [
             {
               $project: {
                 password: 0,
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
       },
       {
-        $unwind: "$blockedUser"
+        $unwind: '$blockedUser',
       },
       {
         $project: {
           password: 0,
           blockerUserId: 0,
           blockedUserId: 0,
-        }
-      }
+        },
+      },
     ];
-    const blockList = await this.entityManager.aggregate(BlockedUser, pipeline).toArray();
+    const blockList = await this.entityManager
+      .aggregate(BlockedUser, pipeline)
+      .toArray();
     return blockList;
   }
 }

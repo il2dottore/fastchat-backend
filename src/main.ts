@@ -24,7 +24,6 @@ export class CustomIoAdapter extends IoAdapter {
   }
 }
 
-
 async function bootstrap() {
   const host = process.env.HOST ?? '0.0.0.0';
   const keyPath = process.env.HTTPS_KEY_PATH ?? 'certs/key.pem';
@@ -53,7 +52,7 @@ async function bootstrap() {
       : undefined,
   );
 
-  app.useGlobalPipes(new SussyValidationPipe);
+  app.useGlobalPipes(new SussyValidationPipe());
   app.use(cookieParser());
   app.useWebSocketAdapter(new CustomIoAdapter(app));
   await app.listen(port, host);

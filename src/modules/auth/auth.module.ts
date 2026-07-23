@@ -8,9 +8,7 @@ import { MailService } from 'src/shared/services/mail.service';
 @Module({
   controllers: [AuthController],
   providers: [AuthService, TokenService, MailService],
-  imports: [
-    UserModule,
-  ],
-  exports: [AuthService]
+  imports: [UserModule],
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,6 +1,9 @@
-import { Expose } from "class-transformer";
-import { IsArray, IsObject, IsString } from "class-validator";
-import { DirectConversationMetadata, GroupConversationMetadata } from "../schemas/conversation.schema";
+import { Expose } from 'class-transformer';
+import { IsArray, IsObject, IsString } from 'class-validator';
+import {
+  DirectConversationMetadata,
+  GroupConversationMetadata,
+} from '../schemas/conversation.schema';
 
 export class CreateConversationDto {
   @IsString()

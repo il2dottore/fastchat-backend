@@ -6,10 +6,8 @@ import { DatabaseModule } from '../database.module';
 
 @Module({
   providers: [ParticipantService],
-  imports: [
-    UserModule,
-  ],
+  imports: [UserModule],
   controllers: [ParticipantController],
   exports: [ParticipantService],
 })
-export class ParticipantModule { }
+export class ParticipantModule {}

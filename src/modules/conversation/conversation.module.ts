@@ -7,12 +7,8 @@ import { ConversationController } from './conversation.controller';
 
 @Module({
   providers: [ConversationService],
-  imports: [
-    ParticipantModule,
-    forwardRef(() => MessageModule),
-    UploadModule,
-  ],
+  imports: [ParticipantModule, forwardRef(() => MessageModule), UploadModule],
   exports: [ConversationService],
   controllers: [ConversationController],
 })
-export class ConversationModule { }
+export class ConversationModule {}

@@ -6,9 +6,7 @@ import { ContactModule } from '../contact/contact.module';
 @Module({
   controllers: [UserController],
   providers: [UserService],
-  imports: [
-    ContactModule,
-  ],
+  imports: [ContactModule],
   exports: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

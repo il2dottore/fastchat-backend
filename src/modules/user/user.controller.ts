@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../conversation/dtos/create-user.dto';
@@ -12,18 +21,17 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly contactService: ContactService,
-  ) {
-  }
+  ) {}
 
   @UseGuards(AuthGuard)
   @Get('me')
   async getProfile(@Req() request: Request) {
-    console.log("getProfile()");
+    console.log('getProfile()');
     try {
       const result = await this.userService.find({
         where: {
-          _id: request['user']._id
-        }
+          _id: request['user']._id,
+        },
       });
       if (result.length === 0) {
         throw error('No user found');
@@ -39,10 +47,7 @@ export class UserController {
   // Get user information by MongoDB ID
   @UseGuards(AuthGuard)
   @Get(':userId')
-  async getUserInfo(
-    @Param('userId') userId: string,
-    @Req() request: Request,
-  ) {
+  async getUserInfo(@Param('userId') userId: string, @Req() request: Request) {
     try {
       const result = await this.userService.find({
         _id: new ObjectId(userId),
@@ -53,7 +58,7 @@ export class UserController {
       const user = result[0];
       const hasContactWithMe = await this.contactService.contactExists(
         request['user']._id,
-        user._id
+        user._id,
       );
       if (hasContactWithMe) {
         user['hasContactWithMe'] = true;
@@ -74,7 +79,8 @@ export class UserController {
   @Get(':userId/conversations')
   async getConversations(@Param('userId') userId: string) {
     const userObjectId = new ObjectId(userId);
-    const conversations = await this.userService.getConversationsByUser(userObjectId);
+    const conversations =
+      await this.userService.getConversationsByUser(userObjectId);
     return success('Conversation', conversations);
   }
 
@@ -90,7 +96,10 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Post('fcm-token')
-  async updateFcmToken(@Req() request: Request, @Body() body: { token: string | null }) {
+  async updateFcmToken(
+    @Req() request: Request,
+    @Body() body: { token: string | null },
+  ) {
     try {
       await this.userService.updateFcmToken(request['user']._id, body.token);
       return success('FCM token updated successfully');

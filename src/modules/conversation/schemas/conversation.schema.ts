@@ -3,7 +3,7 @@ import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
 export class DirectConversationMetadata {
   autoDeleteTime?: number; // In seconds
-};
+}
 
 export enum GroupAccessibility {
   PRIVATE = 'private',
@@ -16,7 +16,7 @@ export class GroupConversationMetadata {
   groupThumbnail: string;
   inviteSlug?: string;
   accessibility?: GroupAccessibility;
-};
+}
 
 export enum ConversationType {
   DIRECT = 'direct',
@@ -24,7 +24,7 @@ export enum ConversationType {
 }
 
 @Entity({
-  name: 'conversations'
+  name: 'conversations',
 })
 export class Conversation {
   @ObjectIdColumn()

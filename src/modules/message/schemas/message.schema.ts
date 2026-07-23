@@ -5,7 +5,7 @@ export class MessageMetadata {
   parentId?: ObjectId | null;
   forwardedMessageId?: ObjectId | null;
   textContent?: string | null;
-};
+}
 
 export class MessageAttachment {
   attachmentUrl: string;
@@ -15,7 +15,7 @@ export class MessageAttachment {
 }
 
 @Entity({
-  name: 'messages'
+  name: 'messages',
 })
 export class Message {
   @ObjectIdColumn()

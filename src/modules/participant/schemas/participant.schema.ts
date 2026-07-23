@@ -4,7 +4,7 @@ import { Column, Entity, ObjectIdColumn } from 'typeorm';
 export enum ParticipantRole {
   MEMBER = 'member',
   ADMINISTRATOR = 'administrator',
-  OWNER = 'owner'
+  OWNER = 'owner',
 }
 
 export class BanStatus {
@@ -15,7 +15,7 @@ export class BanStatus {
 }
 
 @Entity({
-  name: 'participants'
+  name: 'participants',
 })
 export class Participant {
   @ObjectIdColumn()
@@ -29,7 +29,7 @@ export class Participant {
 
   @Column({
     type: 'enum',
-    enum: ParticipantRole
+    enum: ParticipantRole,
   })
   role: ParticipantRole;
 

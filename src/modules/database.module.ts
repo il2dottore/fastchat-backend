@@ -12,7 +12,6 @@ import { BlockedUser } from './chat-logic/schemas/blocked-user.schema';
 import { VerificationCode } from './auth/schemas/verification-code.schema';
 import { Reaction } from './reaction/schemas/reaction.schema';
 
-
 export const MongoProvider = [
   {
     provide: MongoEntityManager,
@@ -51,4 +50,4 @@ export const MongoProvider = [
   ],
   controllers: [],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

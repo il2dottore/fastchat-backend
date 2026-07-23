@@ -1,4 +1,13 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthUserDto } from './dtos/auth.dto';
 import { RegisterDto } from './dtos/register.dto';
 import { Request, Response } from 'express';
@@ -12,10 +21,13 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   @Post('login')
-  async signIn(@Body() signInDto: AuthUserDto, @Res({ passthrough: true }) response: Response) {
+  async signIn(
+    @Body() signInDto: AuthUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     try {
       const authResult = await this.authService.auth(signInDto);
       const tokens = {
@@ -23,21 +35,18 @@ export class AuthController {
         refreshToken: this.tokenService.signRefreshToken(authResult._id!),
         user: authResult,
       };
-      await this.authService.createSession(tokens.refreshToken, authResult._id!);
-      return success(
-        'Auth successfully',
-        tokens,
+      await this.authService.createSession(
+        tokens.refreshToken,
+        authResult._id!,
       );
+      return success('Auth successfully', tokens);
     } catch (exception) {
       throw error(exception.message);
     }
   }
 
   @Post('logout')
-  async signOut(@Body() signOutDto: {
-    userId: string,
-    refreshToken: string,
-  }) {
+  async signOut(@Body() signOutDto: { userId: string; refreshToken: string }) {
     try {
       await this.authService.signOut(signOutDto.refreshToken);
       console.log(signOutDto.userId, signOutDto.refreshToken);
@@ -48,14 +57,12 @@ export class AuthController {
   }
 
   @Post('request-access-token')
-  async requestAccessToken(
-    @Body() body: {
-      refreshToken: string
-    }
-  ) {
+  async requestAccessToken(@Body() body: { refreshToken: string }) {
     try {
       return success('This is your access token', {
-        accessToken: await this.authService.requestAccessToken(body.refreshToken)
+        accessToken: await this.authService.requestAccessToken(
+          body.refreshToken,
+        ),
       });
     } catch (exception) {
       throw new HttpException(
@@ -76,7 +83,7 @@ export class AuthController {
   }
 
   @Post('verify-password-code')
-  async verifyPasswordCode(@Body() body: { email: string, code: string }) {
+  async verifyPasswordCode(@Body() body: { email: string; code: string }) {
     try {
       await this.authService.verifyPasswordCode(body.email, body.code);
       return success('Code verified successfully');
@@ -87,13 +94,13 @@ export class AuthController {
 
   @Post('change-password')
   async changePassword(
-    @Body() body: { email: string, code: string, newPassword: string }
+    @Body() body: { email: string; code: string; newPassword: string },
   ) {
     try {
       await this.authService.verifyAndChangePassword(
         body.email,
         body.code,
-        body.newPassword
+        body.newPassword,
       );
       return success('Password changed successfully. Please login again.');
     } catch (exception) {
@@ -111,7 +118,7 @@ export class AuthController {
   }
 
   @Post('verify-registration')
-  async verifyRegistration(@Body() body: { email: string, code: string }) {
+  async verifyRegistration(@Body() body: { email: string; code: string }) {
     try {
       await this.authService.verifyRegistration(body.email, body.code);
       return success('Account verified successfully. You can now login.');
@@ -121,9 +128,12 @@ export class AuthController {
   }
 
   @Post('check-availability')
-  async checkAvailability(@Body() body: { email: string, username: string }) {
+  async checkAvailability(@Body() body: { email: string; username: string }) {
     try {
-      return success('Availability check', await this.authService.checkAvailability(body.email, body.username));
+      return success(
+        'Availability check',
+        await this.authService.checkAvailability(body.email, body.username),
+      );
     } catch (exception) {
       throw error(exception.message);
     }

@@ -20,9 +20,7 @@ export class DeleteContactDto {
 
 @Injectable()
 export class ContactService {
-  constructor(
-    private readonly entityManager: MongoEntityManager
-  ) { }
+  constructor(private readonly entityManager: MongoEntityManager) {}
 
   async create(addContactDto: AddContactDto) {
     const foundContact = await this.contactExists(
@@ -53,18 +51,18 @@ export class ContactService {
       {
         $match: {
           ownerId: ownerId,
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "peerId",
-          foreignField: "_id",
-          as: "peerUser",
         },
       },
       {
-        $unwind: "$peerUser",
+        $lookup: {
+          from: 'users',
+          localField: 'peerId',
+          foreignField: '_id',
+          as: 'peerUser',
+        },
+      },
+      {
+        $unwind: '$peerUser',
       },
     ];
     const result = this.entityManager.aggregate(Contact, pipeline);
@@ -72,14 +70,11 @@ export class ContactService {
   }
 
   async contactExists(ownerId: ObjectId, peerId: ObjectId) {
-    return await this.entityManager.findOne(
-      Contact,
-      {
-        where: {
-          ownerId: ownerId,
-          peerId: peerId
-        }
-      }
-    );
+    return await this.entityManager.findOne(Contact, {
+      where: {
+        ownerId: ownerId,
+        peerId: peerId,
+      },
+    });
   }
 }

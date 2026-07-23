@@ -19,15 +19,16 @@ export class UploadController {
   constructor(
     private readonly uploadService: UploadService,
     private readonly entityManager: MongoEntityManager,
-  ) { }
+  ) {}
 
   @Post('group-thumbnail')
   @UseInterceptors(FileInterceptor('file'))
   async uploadGroupThumbnail(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: {
+    @Body()
+    body: {
       conversationId: string;
-    }
+    },
   ) {
     const fileExtension = file.originalname.split('.').pop();
     const avatarPath = `group-thumbnail/${body.conversationId}.${fileExtension}`;
@@ -39,9 +40,9 @@ export class UploadController {
       },
       {
         $set: {
-          "metadata.groupThumbnail": result.url
-        }
-      }
+          'metadata.groupThumbnail': result.url,
+        },
+      },
     );
     return success('Uploaded', result);
   }
@@ -50,9 +51,10 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: {
+    @Body()
+    body: {
       userId: string;
-    }
+    },
   ) {
     const fileExtension = file.originalname.split('.').pop();
     const avatarPath = `avatars/${body.userId}.${fileExtension}`;
@@ -64,9 +66,9 @@ export class UploadController {
       },
       {
         $set: {
-          avatarUrl: result.url
-        }
-      }
+          avatarUrl: result.url,
+        },
+      },
     );
     return success('Uploaded', result);
   }
@@ -75,10 +77,11 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadMessageAttachment(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: {
+    @Body()
+    body: {
       userId: string;
       conversationId: string;
-    }
+    },
   ) {
     const timenow = Date.now();
     const fileExtension = file.originalname.split('.').pop();

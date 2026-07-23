@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Column, CreateDateColumn, Entity, ObjectIdColumn } from 'typeorm';
 
 @Entity({
-  name: 'banned_users'
+  name: 'banned_users',
 })
 export class BannedUser {
   @ObjectIdColumn()

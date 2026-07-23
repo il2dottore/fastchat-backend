@@ -5,11 +5,13 @@ import { success } from 'src/helpers/http.helper';
 
 @Controller('reactions')
 export class ReactionController {
-    constructor(private readonly reactionService: ReactionService) { }
+  constructor(private readonly reactionService: ReactionService) {}
 
-    @Get(':messageId')
-    async getReactions(@Param('messageId') messageId: string) {
-        const reactions = await this.reactionService.getReactionsByMessage(new ObjectId(messageId));
-        return success('Reactions retrieved successfully', reactions);
-    }
+  @Get(':messageId')
+  async getReactions(@Param('messageId') messageId: string) {
+    const reactions = await this.reactionService.getReactionsByMessage(
+      new ObjectId(messageId),
+    );
+    return success('Reactions retrieved successfully', reactions);
+  }
 }
