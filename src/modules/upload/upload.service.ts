@@ -12,12 +12,28 @@ import * as nodePath from 'path';
 export class UploadService {
   private readonly s3: S3Client;
   private readonly bucket = process.env.R2_BUCKET;
-  private readonly publicUrl = process.env.R2_PUBLIC_URL;
+  private readonly publicUrl = (process.env.R2_PUBLIC_URL ?? '').replace(
+    /\/+$/,
+    '',
+  );
 
   constructor() {
+    // R2_ENDPOINT must point to the account endpoint, not a bucket URL.
+    // Accept the old `/bucket` form defensively so uploads do not target a
+    // duplicated bucket path when an existing deployment has that value.
+    const configuredEndpoint = (process.env.R2_ENDPOINT ?? '').replace(
+      /\/+$/,
+      '',
+    );
+    const bucketSuffix = this.bucket ? `/${this.bucket}` : '';
+    const endpoint =
+      bucketSuffix && configuredEndpoint.endsWith(bucketSuffix)
+        ? configuredEndpoint.slice(0, -bucketSuffix.length)
+        : configuredEndpoint;
+
     this.s3 = new S3Client({
       region: 'auto',
-      endpoint: process.env.R2_ENDPOINT!,
+      endpoint,
       credentials: {
         accessKeyId: process.env.R2_ACCESS_KEY_ID!,
         secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
@@ -42,7 +58,7 @@ export class UploadService {
         remoteFileName: nodePath.basename(path),
         fileSize: file.size,
         mimeType: file.mimetype,
-        url: `${this.publicUrl}/${path}`,
+        url: `${this.publicUrl}/${path.replace(/^\/+/, '')}`,
       };
     } catch (err) {
       console.error('Upload R2 error:', err);
