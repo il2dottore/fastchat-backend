@@ -38,7 +38,7 @@ export class CallGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('offer')
   handleOffer(
     client: Socket,
-    payload: { conversationId: string; offer: any; toUserId: string },
+    payload: { conversationId: string; offer: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`Sending offer to room ${roomName}`);
@@ -48,7 +48,7 @@ export class CallGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('answer')
   handleAnswer(
     client: Socket,
-    payload: { conversationId: string; answer: any; toUserId: string },
+    payload: { conversationId: string; answer: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`Sending answer to room ${roomName}`);
@@ -58,7 +58,7 @@ export class CallGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('ice-candidate')
   handleIceCandidate(
     client: Socket,
-    payload: { conversationId: string; candidate: any; toUserId: string },
+    payload: { conversationId: string; candidate: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`Sending ICE candidate to room ${roomName}`);

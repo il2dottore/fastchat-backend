@@ -70,12 +70,11 @@ export class UserController {
         request.user._id,
         user._id,
       );
-      if (hasContactWithMe) {
-        user['hasContactWithMe'] = true;
-      } else {
-        user['hasContactWithMe'] = false;
-      }
-      return success('Return data', user);
+      const userResponse = {
+        ...user,
+        hasContactWithMe: Boolean(hasContactWithMe),
+      };
+      return success('Return data', userResponse);
     } catch (exception) {
       throw error(getErrorMessage(exception));
     }

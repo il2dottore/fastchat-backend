@@ -516,7 +516,7 @@ export class MessageSocketGateway
   @SubscribeMessage('offer')
   handleOffer(
     client: Socket,
-    payload: { conversationId: string; offer: any; toUserId: string },
+    payload: { conversationId: string; offer: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`[Merged] Sending offer to room ${roomName}`);
@@ -526,7 +526,7 @@ export class MessageSocketGateway
   @SubscribeMessage('answer')
   handleAnswer(
     client: Socket,
-    payload: { conversationId: string; answer: any; toUserId: string },
+    payload: { conversationId: string; answer: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`[Merged] Sending answer to room ${roomName}`);
@@ -536,7 +536,7 @@ export class MessageSocketGateway
   @SubscribeMessage('ice-candidate')
   handleIceCandidate(
     client: Socket,
-    payload: { conversationId: string; candidate: any; toUserId: string },
+    payload: { conversationId: string; candidate: unknown; toUserId: string },
   ) {
     const roomName = `conversation_${payload.conversationId}`;
     console.log(`[Merged] Sending ICE candidate to room ${roomName}`);
